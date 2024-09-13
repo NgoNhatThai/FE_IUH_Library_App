@@ -7,18 +7,22 @@ import {
   Text,
   TouchableOpacity,
   View,
-  RefreshControl, // Import RefreshControl
+  ActivityIndicator, // Import ActivityIndicator for loading spinner
+  RefreshControl,
 } from "react-native";
 import axiosPrivate from "../../../api/axiosPrivate";
 import { useAuth } from "../../../context/AuthContext";
+
 const { width, height } = Dimensions.get("window");
 
 export default function AllNotify({ navigation }: any) {
   const { user } = useAuth();
   const [data, setData] = React.useState([]);
-  const [refreshing, setRefreshing] = React.useState(false); // Refreshing state
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [loading, setLoading] = React.useState(true); // Loading state
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await axiosPrivate.get(
         `user/get-notification?userId=${user?.studentCode._id}`
@@ -26,6 +30,8 @@ export default function AllNotify({ navigation }: any) {
       setData(response?.data?.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // Stop loading after data is fetched
     }
   };
 
@@ -49,6 +55,9 @@ export default function AllNotify({ navigation }: any) {
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
+        }}
+        onPress={() => {
+          navigation.navigate("BookDetails", { bookId: item.bookId._id });
         }}
       >
         <View
@@ -94,15 +103,17 @@ export default function AllNotify({ navigation }: any) {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
-      {data.length > 0 ? (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      {loading ? (
+        // Show loading spinner when data is being fetched
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : data.length > 0 ? (
         <FlatList
           data={data}
           renderItem={renderItem}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          // keyExtractor={(item) => item.id.toString()}
         />
       ) : (
         <View
