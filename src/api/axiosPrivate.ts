@@ -1,31 +1,34 @@
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
-import { REACT_APP_API_URL } from '@env';
+import axios from "axios";
+import axiosRetry from "axios-retry";
+import { REACT_APP_API_URL } from "@env";
 // import {auth} from '../config/firebase';
-import queryString from 'query-string';
+import queryString from "query-string";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // const BASE_URL = REACT_APP_API_URL || "http://localhost:5500/api";
 const BASE_URL = REACT_APP_API_URL;
+console.log("oa2 t ", BASE_URL);
 const axiosPrivate = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
   paramsSerializer: (params) => queryString.stringify(params),
 });
 axiosPrivate.defaults.withCredentials = true;
 
-// axiosPrivate.interceptors.request.use(
-//     async (config) => {
-//         // Do something before request is sent
-//         // console.log(BASE_URL)
-//         // console.log(auth.currentUser)
-//         const token = auth.currentUser && await auth.currentUser.getIdToken(true);
-//         config.headers["Authorization"] = `Bearer ${token}`;
-//         return config;
-//     },
-//     (error) => {
-//         // Do something with request error
-//         return Promise.reject(error);
-//     }
-// );
+axiosPrivate.interceptors.request.use(
+  async (config) => {
+    // Do something before request is sent
+    // console.log(BASE_URL)
+    // console.log(auth.currentUser)
+    const token = (await AsyncStorage.getItem("token")) || "";
+
+    config.headers["Authorization"] = `Bearer ${token}`;
+    return config;
+  },
+  (error) => {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
 
 // axiosPrivate.interceptors.response.use(
 //     (response) => {
