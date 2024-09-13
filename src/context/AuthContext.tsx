@@ -148,19 +148,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
   const addKeySearch = async (newKeySearch: KeySearch) => {
-    if (!keySearch.find((item) => item.key === newKeySearch.key)) {
-      try {
-        const updatedKeySearch = [newKeySearch, ...keySearch];
-        await AsyncStorage.setItem(
-          "keySearch",
-          JSON.stringify(updatedKeySearch)
-        );
-        setKeySearch(updatedKeySearch);
-      } catch (error) {
-        console.error("Failed to update keySearch", error);
-      }
+    if (newKeySearch.key === "") return;
+    const existingIndex = keySearch.findIndex(
+      (item) => item.key === newKeySearch.key
+    );
+
+    // Nếu tìm thấy từ khóa, xóa phần tử cũ và thêm nó lên đầu mảng
+    let updatedKeySearch;
+    if (existingIndex !== -1) {
+      // Xóa phần tử đã tồn tại
+      keySearch.splice(existingIndex, 1);
+      updatedKeySearch = [newKeySearch, ...keySearch];
+    } else {
+      // Nếu chưa có từ khóa, thêm từ khóa mới lên đầu mảng
+      updatedKeySearch = [newKeySearch, ...keySearch];
+    }
+
+    try {
+      await AsyncStorage.setItem("keySearch", JSON.stringify(updatedKeySearch));
+      setKeySearch(updatedKeySearch);
+    } catch (error) {
+      console.error("Failed to update keySearch", error);
     }
   };
+
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("user");
