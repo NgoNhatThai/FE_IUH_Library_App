@@ -68,7 +68,7 @@ const BookHorizontal: React.FC<BookProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    width: width - 20,
+    width: width * 0.9,
     margin: 7,
     backgroundColor: "#fff",
     borderRadius: 10,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Dimensions,
   FlatList,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import axiosPrivate from "../../../api/axiosPrivate";
 import { useAuth } from "../../../context/AuthContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -35,10 +36,11 @@ export default function AllNotify({ navigation }: any) {
     }
   };
 
-  React.useEffect(() => {
-    fetchData();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
   const onRefresh = async () => {
     setRefreshing(true); // Start refreshing
     await fetchData(); // Reload data
@@ -55,9 +57,22 @@ export default function AllNotify({ navigation }: any) {
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
+          marginBottom: 10,
         }}
-        onPress={() => {
-          navigation.navigate("BookDetails", { bookId: item.bookId._id });
+        onPress={async () => {
+          try {
+            const res = await axiosPrivate.post(
+              `user/update-notification-status`,
+              {
+                userId: user?.studentCode._id,
+                notifyId: item._id,
+              }
+            );
+            console.log("res", res?.data);
+            navigation.navigate("BookDetails", { bookId: item.bookId._id });
+          } catch (err) {
+            console.log(err);
+          }
         }}
       >
         <View

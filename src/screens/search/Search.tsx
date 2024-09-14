@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import axiosPrivate from "../../api/axiosPrivate";
 import BookHorizontal from "../../components/BookHorizontal";
 import { useAuth } from "../../context/AuthContext";
+import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
 type dataHotSearch = {
@@ -68,9 +69,12 @@ export default function Search({ navigation }: any) {
       console.log("err", e);
     }
   };
-  useEffect(() => {
-    getHotSearch();
-  }, [keySearch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getHotSearch();
+    }, [keySearch])
+  );
   const renderItem = ({ item }: { item: any }) => (
     <BookHorizontal
       category={item?.category}

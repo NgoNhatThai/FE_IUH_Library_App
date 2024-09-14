@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -17,29 +17,32 @@ import BookRecently from "../../../components/BookRecently";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import axiosPrivate from "../../../api/axiosPrivate";
 import Book from "../../../components/Book";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Discover({ navigation }: any) {
   const { config, history } = useAuth();
   const [dataBookSuggest, setDataBookSuggest] = useState<any[]>([]);
-  useEffect(() => {
-    async function GetBookSuggest() {
-      try {
-        const res = await axiosPrivate.get("book/get-top-views-book");
-        setDataBookSuggest(res.data.data);
-      } catch (e) {
-        console.log("err", e);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function GetBookSuggest() {
+        try {
+          const res = await axiosPrivate.get("book/get-top-views-book");
+          setDataBookSuggest(res.data.data);
+        } catch (e) {
+          console.log("err", e);
+        }
       }
-    }
 
-    GetBookSuggest();
-    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-    LogBox.ignoreLogs([
-      "`flexWrap: `wrap`` is not supported with the `VirtualizedList` components",
-    ]);
-  }, []);
-
+      GetBookSuggest();
+      LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+      LogBox.ignoreLogs([
+        "`flexWrap: `wrap`` is not supported with the `VirtualizedList` components",
+      ]);
+    }, [])
+  );
   const renderBookRecently = ({ item }: any) => (
     <BookRecently
       bookID={item.bookId}
