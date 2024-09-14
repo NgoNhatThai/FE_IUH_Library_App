@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -11,23 +12,30 @@ import { useAuth } from "../../../context/AuthContext";
 import Book from "../../../components/Book";
 import axios from "axios";
 import axiosPrivate from "../../../api/axiosPrivate";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function TopView({ navigation }: any) {
   const [dataSach, setDataSach] = useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   async function GetBook() {
+    setLoading(true);
+
     try {
       const res = await axiosPrivate.get("book/get-top-views-book");
       setDataSach(res.data.data);
     } catch (e) {
       console.log("err", e);
+    } finally {
+      setLoading(false);
     }
   }
 
-  useEffect(() => {
-    GetBook();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      GetBook();
+    }, [])
+  );
   const renderItem = ({ item }: { item: any }) => (
     <Book
       category={item?.categoryId?.name}
@@ -43,13 +51,18 @@ export default function TopView({ navigation }: any) {
 
   return (
     <LinearGradient colors={["#F3EAC1", "#E0F7F4"]} style={styles.container}>
-      <FlatList
-        data={dataSach}
-        renderItem={renderItem}
-        keyExtractor={(item: any) => item._id}
-        numColumns={3}
-        contentContainerStyle={styles.list}
-      />
+      {loading ? (
+        // Show loading spinner when data is being fetched
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={dataSach}
+          renderItem={renderItem}
+          keyExtractor={(item: any) => item._id}
+          numColumns={3}
+          contentContainerStyle={styles.list}
+        />
+      )}
     </LinearGradient>
   );
 }

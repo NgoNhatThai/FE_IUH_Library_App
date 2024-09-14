@@ -19,7 +19,8 @@ import axiosPrivate from "../../api/axiosPrivate";
 import { useAuth } from "../../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastError, ToastSuscess } from "../../utils/function";
-
+import BookDetail_Comment from "./BookDetail_Comment";
+import BookRelated from "./BookRelated";
 const { width, height } = Dimensions.get("window");
 
 const Tab = createMaterialTopTabNavigator();
@@ -114,7 +115,7 @@ const BookDetails = ({ route, navigation }: any) => {
       if (user) {
         CheckFolow(user.studentCode._id);
       }
-    }, [])
+    }, [bookId])
   );
   // useEffect(() => {
   //   GetBook();
@@ -187,7 +188,10 @@ const BookDetails = ({ route, navigation }: any) => {
               <Text style={styles.categoryText}>{book?.categoryId?.name}</Text>
             </TouchableOpacity>
 
-            <Text style={styles.statText}>❤️ {book?.review?.totalLike}</Text>
+            {/* <Text style={styles.statText}>❤️ {book?.review?.totalLike}</Text> */}
+            <Text style={styles.statText}>
+              ⭐ {book?.review?.rate.toFixed(1)}
+            </Text>
             <Text style={styles.statText}>👁️ {book?.review?.totalView}</Text>
           </View>
         </View>
@@ -230,29 +234,25 @@ const BookDetails = ({ route, navigation }: any) => {
             )}
           </Tab.Screen>
 
-          <Tab.Screen name="Bình luận">
-            {() => (
-              <ScrollView style={styles.container}>
-                <Text style={styles.Text}>Bình luận</Text>
-              </ScrollView>
-            )}
-          </Tab.Screen>
+          <Tab.Screen
+            name="Bình luận"
+            component={BookDetail_Comment}
+            initialParams={{ book }}
+          />
 
-          <Tab.Screen name="Sách giấy">
+          {/* <Tab.Screen name="Sách giấy">
             {() => (
               <ScrollView style={styles.container}>
                 <Text style={styles.Text}>Sách giấy</Text>
               </ScrollView>
             )}
-          </Tab.Screen>
+          </Tab.Screen> */}
 
-          <Tab.Screen name="Sách liên quan">
-            {() => (
-              <ScrollView style={styles.container}>
-                <Text style={styles.Text}>Sách liên quan</Text>
-              </ScrollView>
-            )}
-          </Tab.Screen>
+          <Tab.Screen
+            name="Sách liên quan"
+            initialParams={{ book }}
+            component={BookRelated}
+          />
         </Tab.Navigator>
       </View>
 
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     marginLeft: 20,
     flex: 1,
-    gap: 10,
+    gap: 7,
   },
   title: {
     fontSize: 24,
