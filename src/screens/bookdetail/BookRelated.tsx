@@ -1,43 +1,25 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
   StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Icon from "react-native-vector-icons/FontAwesome";
 import axiosPrivate from "../../api/axiosPrivate";
 import BookHorizontal from "../../components/BookHorizontal";
-import { useAuth } from "../../context/AuthContext";
-import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
-type dataHotSearch = {
-  _id: string;
-  keyword: string;
-  searchCount: number;
-  isTrending: boolean;
-  relatedBookIds: string[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-};
-export default function BookRelated({ navigation, route }: any) {
+export default function BookRelated({ navigation, route, bookId }: any) {
   const [loading, setLoading] = useState(false);
-
   const [dataSach, setDataSach] = useState([]);
 
   const getBookRelated = async () => {
     setLoading(true);
     try {
-      const res = await axiosPrivate.get(
-        `book/get-related-books/${route.params.book._id}`
-      );
+      const res = await axiosPrivate.get(`book/get-related-books/${bookId}`);
       setDataSach(res?.data?.data);
     } catch (e) {
       console.log("err", e);
@@ -49,7 +31,7 @@ export default function BookRelated({ navigation, route }: any) {
   useFocusEffect(
     useCallback(() => {
       getBookRelated();
-    }, [route.params.book._id])
+    }, [bookId])
   );
   const renderItem = ({ item }: { item: any }) => (
     <View style={{ flex: 1 }}>

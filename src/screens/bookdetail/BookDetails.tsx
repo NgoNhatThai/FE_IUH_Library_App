@@ -234,12 +234,15 @@ const BookDetails = ({ route, navigation }: any) => {
             )}
           </Tab.Screen>
 
-          <Tab.Screen
-            name="Bình luận"
-            component={BookDetail_Comment}
-            initialParams={{ book }}
-          />
-
+          <Tab.Screen name="Bình luận">
+            {() => (
+              <BookDetail_Comment
+                bookId={bookId}
+                navigation={navigation}
+                route={route}
+              />
+            )}
+          </Tab.Screen>
           {/* <Tab.Screen name="Sách giấy">
             {() => (
               <ScrollView style={styles.container}>
@@ -248,11 +251,15 @@ const BookDetails = ({ route, navigation }: any) => {
             )}
           </Tab.Screen> */}
 
-          <Tab.Screen
-            name="Sách liên quan"
-            initialParams={{ book }}
-            component={BookRelated}
-          />
+          <Tab.Screen name="Sách liên quan">
+            {() => (
+              <BookRelated
+                bookId={bookId}
+                navigation={navigation}
+                route={route}
+              />
+            )}
+          </Tab.Screen>
         </Tab.Navigator>
       </View>
 
