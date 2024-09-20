@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 type BookProps = {
   category?: string;
@@ -15,6 +16,8 @@ type BookProps = {
   titleBottom?: string;
   bookTitle: string;
   authorName: string;
+  detele?: boolean;
+  onDetete?: () => void;
   onPress: () => void;
 };
 
@@ -27,6 +30,8 @@ const BookHorizontal: React.FC<BookProps> = ({
   bookTitle,
   authorName,
   onPress,
+  detele,
+  onDetete,
 }) => {
   return (
     <TouchableOpacity
@@ -61,6 +66,24 @@ const BookHorizontal: React.FC<BookProps> = ({
           <Text style={styles.likesCount}>402</Text>
         </View>
       </View>
+      {detele && (
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 5,
+            right: 5,
+            backgroundColor: "#CDCDCB",
+            borderRadius: 50,
+            width: 20,
+            height: 20,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onPress={onDetete}
+        >
+          <MaterialIcons name="clear" size={17} color="#000" />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 };

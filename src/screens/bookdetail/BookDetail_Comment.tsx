@@ -20,18 +20,17 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
-export default function BookDetail_Comment({ navigation, route }: any) {
+export default function BookDetail_Comment({ navigation, route, bookId }: any) {
   const { user } = useAuth();
   const [data, setData] = React.useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
+
   const [commentText, setCommentText] = useState("");
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axiosPrivate.get(
-        `book/get-detail-book/${route.params.book._id}`
-      );
+      const response = await axiosPrivate.get(`book/get-detail-book/${bookId}`);
 
       setData(response?.data?.data?.review?.comments);
     } catch (error) {
@@ -44,7 +43,7 @@ export default function BookDetail_Comment({ navigation, route }: any) {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [route.params.book._id])
+    }, [bookId])
   );
   const onRefresh = async () => {
     setRefreshing(true);
@@ -349,7 +348,7 @@ export default function BookDetail_Comment({ navigation, route }: any) {
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
-      ) : data.length > 0 ? (
+      ) : data?.length > 0 ? (
         <FlatList
           data={data}
           renderItem={renderItem}

@@ -27,6 +27,16 @@ export default function Account({ navigation }: any) {
               }}
               style={{ width: 110, height: 110, borderRadius: 100 }}
             />
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                marginTop: 10,
+                color: "black",
+              }}
+            >
+              {user?.studentCode.userName}
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 logout();
