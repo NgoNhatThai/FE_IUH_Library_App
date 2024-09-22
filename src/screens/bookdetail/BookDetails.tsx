@@ -9,11 +9,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
+  Alert,
 } from "react-native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
+import Feather from "react-native-vector-icons/Feather";
 import LinearGradient from "react-native-linear-gradient";
 import axiosPrivate from "../../api/axiosPrivate";
 import { useAuth } from "../../context/AuthContext";
@@ -21,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastError, ToastSuscess } from "../../utils/function";
 import BookDetail_Comment from "./BookDetail_Comment";
 import BookRelated from "./BookRelated";
+import RNFS from "react-native-fs";
 const { width, height } = Dimensions.get("window");
 
 const Tab = createMaterialTopTabNavigator();
@@ -49,6 +52,8 @@ const BookDetails = ({ route, navigation }: any) => {
   const [book, setBook] = useState<Book | null>(null);
   const [isFolow, setIsFolow] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   async function GetBook() {
     try {
@@ -86,7 +91,6 @@ const BookDetails = ({ route, navigation }: any) => {
           });
           ToastSuscess({ text1: "Đã theo dõi sách" });
 
-          // setIsFolow(false);
           await CheckFolow(user.studentCode._id);
           return;
         } catch (e) {
@@ -164,15 +168,52 @@ const BookDetails = ({ route, navigation }: any) => {
       </View>
     </Modal>
   );
+
+  const DowLoad = async () => {
+    const bookData = JSON.stringify(book);
+    const fileName = `book_${book._id}.json`;
+    const path = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+
+    setIsDownloading(true);
+    setDownloadProgress(0);
+
+    try {
+      await RNFS.writeFile(path, bookData, "utf8");
+      setDownloadProgress(1);
+
+      Alert.alert(
+        "Tải sách thành công!",
+        `Sách "${book.title}" đã được tải xuống.`
+      );
+    } catch (error: any) {
+      Alert.alert("Lỗi khi tải sách", error.message);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.goBackButton}
         onPress={() => navigation.goBack()}
       >
-        <Icon name="arrow-back" size={24} color="#fff" />
+        <Icon name="arrow-back" size={28} color="black" />
       </TouchableOpacity>
-
+      <TouchableOpacity
+        style={{ position: "absolute", top: 20, right: 30, zIndex: 1 }}
+        onPress={DowLoad}
+      >
+        <Feather name="download-cloud" size={28} color="black" />
+      </TouchableOpacity>
+      {isDownloading && (
+        <Modal transparent={true} visible={isDownloading}>
+          <View style={styles.progressModal}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text>Đang tải xuống: {(downloadProgress * 100).toFixed(0)}%</Text>
+          </View>
+        </Modal>
+      )}
       <View style={styles.topContainer}>
         <Image
           source={{ uri: book.image }}
@@ -449,6 +490,12 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: "#333",
     fontSize: 16,
+  },
+  progressModal: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 });
 

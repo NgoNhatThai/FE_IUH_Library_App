@@ -98,7 +98,7 @@ export default function BookDetail_Comment({ navigation, route, bookId }: any) {
       try {
         const res = await axiosPrivate.post(`user/comment`, {
           userId: user?.studentCode?._id,
-          bookId: route.params.book._id,
+          bookId: bookId,
           comment: commentText,
         });
 
