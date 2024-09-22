@@ -44,6 +44,9 @@ export default function BookRelated({ navigation, route, bookId }: any) {
         onPress={() => {
           navigation.navigate("BookDetails", { bookId: item._id });
         }}
+        // onPressCategory={() => {
+        //   navigation.navigate("CatergoryDetail", { item: item?. });
+        // }}
       />
     </View>
   );

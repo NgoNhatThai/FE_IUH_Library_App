@@ -19,6 +19,9 @@ type BookProps = {
   detele?: boolean;
   onDetete?: () => void;
   onPress: () => void;
+  onPressCategory?: () => void;
+  isDowload?: boolean;
+  fileSize?: string;
 };
 
 const { width } = Dimensions.get("window");
@@ -32,6 +35,9 @@ const BookHorizontal: React.FC<BookProps> = ({
   onPress,
   detele,
   onDetete,
+  onPressCategory,
+  isDowload,
+  fileSize,
 }) => {
   return (
     <TouchableOpacity
@@ -55,16 +61,38 @@ const BookHorizontal: React.FC<BookProps> = ({
           {authorName}
         </Text>
         {category && (
-          <TouchableOpacity style={styles.categoryButton}>
+          <TouchableOpacity
+            onPress={onPressCategory}
+            style={styles.categoryButton}
+          >
             <Text style={styles.categoryButtonText}>{category}</Text>
           </TouchableOpacity>
         )}
-        <View style={styles.bottomRow}>
-          <TouchableOpacity style={styles.heartIcon}>
-            <Icon name="heart" size={20} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.likesCount}>402</Text>
-        </View>
+
+        {isDowload ? (
+          <View style={styles.bottomRow}>
+            <MaterialIcons name="storage" size={17} color="#E48641" />
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#E48641",
+                textAlign: "center",
+                alignItems: "center",
+                justifyContent: "center",
+                marginLeft: 5,
+              }}
+            >
+              {fileSize}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.bottomRow}>
+            <TouchableOpacity style={styles.heartIcon}>
+              <Icon name="heart" size={20} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.likesCount}>402</Text>
+          </View>
+        )}
       </View>
       {detele && (
         <TouchableOpacity
