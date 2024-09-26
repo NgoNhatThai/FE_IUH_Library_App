@@ -9,6 +9,7 @@ import {
   ScrollView,
   LogBox,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Swiper from "react-native-swiper";
@@ -22,26 +23,34 @@ import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 
 export default function Discover({ navigation }: any) {
-  const { config, history } = useAuth();
+  const { config, history, user, token } = useAuth();
   const [dataBookSuggest, setDataBookSuggest] = useState<any[]>([]);
-
+  const [loading, setLoading] = React.useState(true);
+  async function GetBookSuggest() {
+    setLoading(true);
+    try {
+      const res = await axiosPrivate.get(
+        `book/get-recommend-books?userId=${user?.studentCode?._id}`
+      );
+      if (res?.data?.data?.message) {
+        setDataBookSuggest([]);
+        return;
+      }
+      setDataBookSuggest(res.data.data);
+    } catch (e) {
+      console.log("erre", e);
+    } finally {
+      setLoading(false);
+    }
+  }
   useFocusEffect(
     useCallback(() => {
-      async function GetBookSuggest() {
-        try {
-          const res = await axiosPrivate.get("book/get-top-views-book");
-          setDataBookSuggest(res.data.data);
-        } catch (e) {
-          console.log("err", e);
-        }
-      }
-
       GetBookSuggest();
       LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
       LogBox.ignoreLogs([
         "`flexWrap: `wrap`` is not supported with the `VirtualizedList` components",
       ]);
-    }, [])
+    }, [user])
   );
   const renderBookRecently = ({ item }: any) => (
     <BookRecently
@@ -126,20 +135,20 @@ export default function Discover({ navigation }: any) {
             name="right"
             size={20}
             color="black"
-            onPress={() => navigation.navigate("ListBook")}
+            onPress={() => navigation.navigate("RecentlyDetail")}
           />
         </View>
-        {history.length > 0 ? (
+        {history?.length > 0 ? (
           <FlatList
             data={history}
             renderItem={renderBookRecently}
-            keyExtractor={(item: any) => item.bookId.toString()}
+            keyExtractor={(item: any) => item?.bookId?.toString()}
             horizontal
             contentContainerStyle={styles.listContainer}
           />
         ) : (
           <Text style={{ textAlign: "center", fontSize: 20, color: "black" }}>
-            Bạn chưa đọc sách nào
+            Bạn chưa đọc sách nào gần đây
           </Text>
         )}
 
@@ -151,16 +160,35 @@ export default function Discover({ navigation }: any) {
             name="right"
             size={20}
             color="black"
-            onPress={() => navigation.navigate("ListBook")}
+            onPress={() =>
+              navigation.navigate("SuggestDetail", { dataBookSuggest })
+            }
           />
         </View>
-        <FlatList
-          data={dataBookSuggest.slice(0, 6)}
-          renderItem={renderSuggest}
-          keyExtractor={(item: any) => item._id}
-          numColumns={3}
-          // contentContainerStyle={styles.list}
-        />
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : dataBookSuggest?.length > 0 ? (
+          <FlatList
+            data={dataBookSuggest?.slice(0, 6)}
+            renderItem={renderSuggest}
+            keyExtractor={(item: any) => item._id}
+            numColumns={3}
+            // contentContainerStyle={styles.list}
+          />
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ textAlign: "center", fontSize: 20, color: "black" }}>
+              Chưa có gợi ý sách nào cho bạn
+            </Text>
+          </View>
+        )}
+
         {/* <View style={{ flex: 1, alignItems: "center", marginVertical: 7 }}>
           <TouchableOpacity
             style={{
@@ -187,6 +215,7 @@ export default function Discover({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
   },
   scrollViewContainer: {
     flexGrow: 1,
@@ -250,6 +279,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   listContainer: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 0,
   },
 });

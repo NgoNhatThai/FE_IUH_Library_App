@@ -8,6 +8,8 @@ import {
   CatergoryDetail,
   SignIn,
   SignUp,
+  RecentlyDetail,
+  SuggestDetail,
 } from "../screens/index";
 const Stack = createNativeStackNavigator();
 import ChapterPage from "../components/ChapterPage";
@@ -21,6 +23,8 @@ const HomeNavigator = () => {
       <Stack.Screen name="BookReader" component={BookReader} />
       <Stack.Screen name="ChapterPage" component={ChapterPage} />
       <Stack.Screen name="CatergoryDetail" component={CatergoryDetail} />
+      <Stack.Screen name="RecentlyDetail" component={RecentlyDetail} />
+      <Stack.Screen name="SuggestDetail" component={SuggestDetail} />
     </Stack.Navigator>
   );
 };

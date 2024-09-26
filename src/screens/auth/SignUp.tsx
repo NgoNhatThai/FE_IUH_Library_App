@@ -43,6 +43,7 @@ function SignUp({ navigation }: any) {
         text1: "Đăng kí thành công ",
         text2: "Hãy đăng nhập để trải nghiệm !!!",
       });
+      navigation.navigate("SignIn");
     } catch (e) {
       ToastError({
         text1: "Lỗi",

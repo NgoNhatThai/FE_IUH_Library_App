@@ -14,4 +14,6 @@ export { default as CatergoryDetail } from "./home/CatergoryDetail";
 export { default as AllNotify } from "./notify/materialTop/AllNotify";
 export { default as UnRead } from "./notify/materialTop/UnRead";
 export { default as Following } from "./bookshelf/materialTop/Following";
+export { default as RecentlyDetail } from "./home/RecentlyDetail";
+export { default as SuggestDetail } from "./home/SuggestDetail";
 export { default as Dowload } from "./bookshelf/materialTop/Dowload";
