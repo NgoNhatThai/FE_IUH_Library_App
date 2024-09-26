@@ -28,7 +28,7 @@ const BookReader = ({ route, navigation }: any) => {
   const [savedPage, setSavedPage] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
   const flatListRef = useRef<FlatList<any> | null>(null);
-
+  const [chapter, setChapter] = useState(0);
   async function GetBook() {
     try {
       const res = await axiosPrivate.get(`book/get-detail-book/${bookId}`);
@@ -36,6 +36,7 @@ const BookReader = ({ route, navigation }: any) => {
 
       // Kiểm tra xem sách đã có trong lịch sử chưa
       const bookInHistory = history.find((item: any) => item.bookId === bookId);
+      console.log("bookInHistory", bookInHistory);
       if (bookInHistory) {
         setSavedPage(bookInHistory.currentPage); // Lưu trang đã lưu trong state
         setModalVisible(true); // Hiển thị modal hỏi người dùng
@@ -46,7 +47,9 @@ const BookReader = ({ route, navigation }: any) => {
       console.log("err", e);
     }
   }
-
+  const GetBookDowload = () => {
+    setBook(route.params.dataDowload);
+  };
   const handleContinueReading = () => {
     setCurrentPage(savedPage); // Đọc từ trang đã lưu
     setModalVisible(false); // Đóng modal
@@ -60,8 +63,17 @@ const BookReader = ({ route, navigation }: any) => {
   };
 
   useEffect(() => {
-    GetBook();
-  }, [bookId]);
+    if (route?.params?.bookId) {
+      GetBook();
+    } else {
+      GetBookDowload();
+    }
+  }, [route?.params]);
+  useEffect(() => {
+    if (chapter !== 0) {
+      flatListRef.current?.scrollToIndex({ index: chapter, animated: true });
+    }
+  }, [chapter]);
 
   useEffect(() => {
     // Dừng âm thanh khi currentPage thay đổi
@@ -80,7 +92,7 @@ const BookReader = ({ route, navigation }: any) => {
       const percentRead = Math.floor(((currentPage - 2) / totalpage) * 100);
 
       addHistory({
-        bookId: bookId,
+        bookId: bookId || route.params.dataDowload._id,
         image: book.image,
         title: book.title,
         currentPage: currentPage,
@@ -145,6 +157,7 @@ const BookReader = ({ route, navigation }: any) => {
         <TocPage
           chapters={book?.content?.chapters}
           setCurrentPage={setCurrentPage}
+          setChapter={setChapter}
         />
       );
     } else {
@@ -173,7 +186,7 @@ const BookReader = ({ route, navigation }: any) => {
         return (
           <ChapterPage
             currentPage={currentPage}
-            id={bookId}
+            id={bookId || route.params.dataDowload._id}
             chapter={book.content.chapters[chapterIndex]}
             imageIndex={imageIndex}
             playSound={playSound}
@@ -250,7 +263,7 @@ const BookReader = ({ route, navigation }: any) => {
           ),
         ]}
         renderItem={renderPage}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={(_, index) => index?.toString()}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
@@ -258,6 +271,18 @@ const BookReader = ({ route, navigation }: any) => {
           setCurrentPage(Math.round(e.nativeEvent.contentOffset.x / width))
         }
         extraData={currentPage}
+        getItemLayout={(_, index) => ({
+          length: width, // Chiều rộng của mỗi trang
+          offset: width * index, // Tính toán vị trí trang dựa trên chỉ số
+          index,
+        })}
+        onScrollToIndexFailed={(info) => {
+          // Xử lý trường hợp scrollToIndex thất bại
+          flatListRef.current?.scrollToOffset({
+            offset: info.averageItemLength * info.index,
+            animated: true,
+          });
+        }}
       />
     </GestureRecognizer>
   );

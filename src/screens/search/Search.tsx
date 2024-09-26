@@ -77,14 +77,18 @@ export default function Search({ navigation }: any) {
   );
   const renderItem = ({ item }: { item: any }) => (
     <BookHorizontal
-      category={item?.category}
+      category={item?.categoryId[0]?.name}
       image={item?.image}
       titleBottom={item?.price.toString()}
       bookTitle={item?.title}
-      authorName={item?.author}
+      authorName={item?.authorId[0]?.name}
       onPress={() => {
         navigation.navigate("BookDetails", { bookId: item._id });
       }}
+      onPressCategory={() => {
+        navigation.navigate("CatergoryDetail", { item: item?.categoryId });
+      }}
+      star={item?.review[0]?.rate}
     />
   );
   const renderItemKey = (item: any) => {

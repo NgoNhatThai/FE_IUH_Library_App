@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 type BookProps = {
   category?: string;
@@ -22,6 +24,8 @@ type BookProps = {
   onPressCategory?: () => void;
   isDowload?: boolean;
   fileSize?: string;
+  onPressDeteleDowload?: () => void;
+  star: number;
 };
 
 const { width } = Dimensions.get("window");
@@ -38,7 +42,45 @@ const BookHorizontal: React.FC<BookProps> = ({
   onPressCategory,
   isDowload,
   fileSize,
+  onPressDeteleDowload,
+  star,
 }) => {
+  const [modalMenuVisible, setModalMenuVisible] = useState(false);
+  const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+  const handleEllipsisPress = (event: any) => {
+    const { pageX, pageY } = event.nativeEvent;
+    setModalPosition({ x: pageX, y: pageY });
+    setModalMenuVisible(true);
+  };
+  const renderMenu = () => (
+    <Modal
+      transparent={true}
+      visible={modalMenuVisible}
+      onRequestClose={() => setModalMenuVisible(false)}
+    >
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        onPress={() => setModalMenuVisible(false)}
+      >
+        <View
+          style={[
+            styles.modalMenu,
+            { top: modalPosition.y, left: modalPosition.x - 180 },
+          ]}
+        >
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() => {
+              setModalMenuVisible(false);
+              onPressDeteleDowload && onPressDeteleDowload();
+            }}
+          >
+            <Text style={styles.menuText}>Xóa bản tải xuống</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
   return (
     <TouchableOpacity
       style={styles.container}
@@ -87,13 +129,19 @@ const BookHorizontal: React.FC<BookProps> = ({
           </View>
         ) : (
           <View style={styles.bottomRow}>
-            <TouchableOpacity style={styles.heartIcon}>
-              <Icon name="heart" size={20} color="#000" />
-            </TouchableOpacity>
-            <Text style={styles.likesCount}>402</Text>
+            <Text style={styles.statText}>⭐ {star.toFixed(1)}</Text>
           </View>
         )}
       </View>
+      {isDowload && (
+        <TouchableOpacity
+          onPress={(e) => handleEllipsisPress(e)}
+          style={{ width: width * 0.08, justifyContent: "center" }}
+        >
+          <Ionicons name="ellipsis-vertical" size={23} color={"#f07b3f"} />
+        </TouchableOpacity>
+      )}
+      {renderMenu()}
       {detele && (
         <TouchableOpacity
           style={{
@@ -195,6 +243,33 @@ const styles = StyleSheet.create({
   likesCount: {
     fontSize: 14,
     color: "#333",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalMenu: {
+    position: "absolute",
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  menuButton: {
+    padding: 10,
+  },
+  menuText: {
+    fontSize: 16,
+    color: "black",
+  },
+  statText: {
+    fontSize: 16,
+    color: "black",
+    marginRight: 20,
   },
 });
 

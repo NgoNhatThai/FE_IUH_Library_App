@@ -41,7 +41,7 @@ export default function Dowload({ navigation }: any) {
 
           return {
             ...parsedContent,
-            fileSize: formatFileSize(file.size), // Format dung lượng file
+            fileSize: formatFileSize(file.size),
           };
         })
       );
@@ -62,7 +62,23 @@ export default function Dowload({ navigation }: any) {
     await fetchDownloadedBooks();
     setRefreshing(false);
   };
+  const HandleDeleteAll = async () => {
+    try {
+      const files = await RNFS.readDir(RNFS.DocumentDirectoryPath);
+      const bookFiles = files.filter(
+        (file) => file.name.startsWith("book_") && file.name.endsWith(".json")
+      );
 
+      await Promise.all(
+        bookFiles.map(async (file) => {
+          await RNFS.unlink(file.path);
+        })
+      );
+      setBooks([]);
+    } catch (error) {
+      console.error("Lỗi khi xóa tất cả sách đã tải:", error);
+    }
+  };
   const renderDeleteAllModal = () => (
     <Modal
       transparent={true}
@@ -72,13 +88,13 @@ export default function Dowload({ navigation }: any) {
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalText}>
-            Bạn có chắc chắn muốn xóa tất cả sách đã theo dõi?
+            Bạn có chắc chắn muốn xóa tất cả sách đã tải xuống?
           </Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               onPress={() => {
                 setModalVisibleDeleteALl(false);
-                // HandleDeleteAll();
+                HandleDeleteAll();
               }}
               style={styles.loginButton}
             >
@@ -95,6 +111,23 @@ export default function Dowload({ navigation }: any) {
       </View>
     </Modal>
   );
+  const HandleDeleteDowload = async (bookFileName: string) => {
+    try {
+      const filePath = `${RNFS.DocumentDirectoryPath}/${bookFileName}`;
+      const fileExists = await RNFS.exists(filePath);
+
+      if (fileExists) {
+        await RNFS.unlink(filePath);
+        console.log(`Đã xóa file: ${bookFileName}`);
+        await fetchDownloadedBooks();
+      } else {
+        console.log("File không tồn tại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa file:", error);
+    }
+  };
+
   const renderItem = ({ item }: any) => {
     return (
       <BookHorizontal
@@ -104,16 +137,19 @@ export default function Dowload({ navigation }: any) {
         bookTitle={item?.title}
         authorName={item?.authorId?.name}
         onPress={() => {
-          navigation.navigate("BookDetails", { bookId: item._id });
+          navigation.navigate("BookDetails", { dataDowload: item });
+          // console.log("item", item);
         }}
-        // onPressCategory={() => {
-        //   navigation.navigate("CatergoryDetail", { item: item?.categoryId });
-        // }}
+        onPressDeteleDowload={() =>
+          HandleDeleteDowload(`book_${item._id}.json`)
+        }
+        star={item?.review?.rate}
         isDowload={true}
         fileSize={item.fileSize}
       />
     );
   };
+
   return (
     <LinearGradient
       colors={["#F3EAC1", "#E0F7F4"]}
@@ -168,7 +204,7 @@ export default function Dowload({ navigation }: any) {
           }}
         >
           <Text style={{ color: "black", fontSize: 17 }}>
-            Bạn chưa theo dõi sách nào
+            Bạn chưa tải xuống sách nào
           </Text>
         </View>
       )}

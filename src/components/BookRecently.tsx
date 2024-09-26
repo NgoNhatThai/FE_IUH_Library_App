@@ -18,8 +18,8 @@ type BookRecentlyProps = {
 
 const { width } = Dimensions.get("window");
 
-const ITEM_MARGIN = 5;
-const ITEM_WIDTH = (width - ITEM_MARGIN * 3) / 2.11;
+const ITEM_MARGIN = 6;
+const ITEM_WIDTH = (width - ITEM_MARGIN * 4) / 2;
 
 const BookRecently: React.FC<BookRecentlyProps> = ({
   bookID,

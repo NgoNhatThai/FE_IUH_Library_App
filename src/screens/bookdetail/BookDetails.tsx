@@ -15,7 +15,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
-import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import LinearGradient from "react-native-linear-gradient";
 import axiosPrivate from "../../api/axiosPrivate";
 import { useAuth } from "../../context/AuthContext";
@@ -24,6 +24,7 @@ import { ToastError, ToastSuscess } from "../../utils/function";
 import BookDetail_Comment from "./BookDetail_Comment";
 import BookRelated from "./BookRelated";
 import RNFS from "react-native-fs";
+import { formatFileSize } from "../../constants/funcition";
 const { width, height } = Dimensions.get("window");
 
 const Tab = createMaterialTopTabNavigator();
@@ -63,6 +64,9 @@ const BookDetails = ({ route, navigation }: any) => {
       console.log("err", e);
     }
   }
+  async function GetBookDowload() {
+    setBook(route.params.dataDowload);
+  }
 
   async function CheckFolow(id: string) {
     try {
@@ -79,6 +83,9 @@ const BookDetails = ({ route, navigation }: any) => {
     }
   }
   const Folow = async () => {
+    if (!route?.params?.bookId) {
+      return;
+    }
     if (!user) {
       setModalVisible(true);
       return;
@@ -113,13 +120,53 @@ const BookDetails = ({ route, navigation }: any) => {
       }
     }
   };
+  const [isDowload, setIsDowload] = useState(false);
+  const [booksDowload, setBooksDowload] = useState<any[]>([]);
+  const fetchDownloadedBooks = async () => {
+    try {
+      const files = await RNFS.readDir(RNFS.DocumentDirectoryPath);
+      const bookFiles = files.filter(
+        (file) => file.name.startsWith("book_") && file.name.endsWith(".json")
+      );
+
+      const booksData = await Promise.all(
+        bookFiles.map(async (file) => {
+          const content = await RNFS.readFile(file.path, "utf8");
+          const parsedContent = JSON.parse(content);
+
+          return {
+            ...parsedContent,
+            fileSize: formatFileSize(file.size),
+          };
+        })
+      );
+      if (route.params.bookId) {
+        if (booksData.some((b) => b._id === route.params.bookId)) {
+          setIsDowload(true);
+        }
+      } else {
+        if (booksData.some((b) => b._id === route.params.dataDowload?._id)) {
+          setIsDowload(true);
+        }
+      }
+      setBooksDowload(booksData);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách sách đã tải:", error);
+    }
+  };
   useFocusEffect(
     useCallback(() => {
-      GetBook();
-      if (user) {
-        CheckFolow(user.studentCode._id);
+      if (route?.params?.bookId) {
+        GetBook();
+        fetchDownloadedBooks();
+        if (user) {
+          CheckFolow(user.studentCode._id);
+        }
+      } else {
+        GetBookDowload();
+        fetchDownloadedBooks();
       }
-    }, [bookId])
+    }, [route.params])
   );
   // useEffect(() => {
   //   GetBook();
@@ -170,14 +217,29 @@ const BookDetails = ({ route, navigation }: any) => {
   );
 
   const DowLoad = async () => {
-    const bookData = JSON.stringify(book);
-    const fileName = `book_${book._id}.json`;
-    const path = `${RNFS.DocumentDirectoryPath}/${fileName}`;
-
-    setIsDownloading(true);
-    setDownloadProgress(0);
-
     try {
+      // kiểm tra xem đã tải sách chưa
+      if (booksDowload.some((b) => b._id === book._id)) {
+        Alert.alert("Sách đã được tải xuống", "Hãy vào kệ sách để xem.");
+        return;
+      }
+      // kiểm tra tổng dung lượng sách đã tải để cảnh báo
+      const totalSize = booksDowload
+        .map((b) => parseInt(b.fileSize.slice(0, 3)))
+        .reduce((a, b) => a + b, 0);
+      if (totalSize >= 10 * 1024) {
+        Alert.alert(
+          "Dung lượng sách đã tải vượt quá 100MB",
+          "Hãy xóa bớt sách đã tải để tải thêm."
+        );
+        return;
+      }
+      const bookData = JSON.stringify(book);
+      const fileName = `book_${book._id}.json`;
+      const path = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+
+      setIsDownloading(true);
+      setDownloadProgress(0);
       await RNFS.writeFile(path, bookData, "utf8");
       setDownloadProgress(1);
 
@@ -185,13 +247,13 @@ const BookDetails = ({ route, navigation }: any) => {
         "Tải sách thành công!",
         `Sách "${book.title}" đã được tải xuống.`
       );
+      await fetchDownloadedBooks();
     } catch (error: any) {
       Alert.alert("Lỗi khi tải sách", error.message);
     } finally {
       setIsDownloading(false);
     }
   };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -204,7 +266,11 @@ const BookDetails = ({ route, navigation }: any) => {
         style={{ position: "absolute", top: 20, right: 30, zIndex: 1 }}
         onPress={DowLoad}
       >
-        <Feather name="download-cloud" size={28} color="black" />
+        {!isDowload ? (
+          <Ionicons name="cloud-download-outline" size={28} color="black" />
+        ) : (
+          <Ionicons name="cloud-download" size={28} color="black" />
+        )}
       </TouchableOpacity>
       {isDownloading && (
         <Modal transparent={true} visible={isDownloading}>
@@ -274,16 +340,28 @@ const BookDetails = ({ route, navigation }: any) => {
               </ScrollView>
             )}
           </Tab.Screen>
-
-          <Tab.Screen name="Bình luận">
-            {() => (
-              <BookDetail_Comment
-                bookId={bookId}
-                navigation={navigation}
-                route={route}
-              />
-            )}
-          </Tab.Screen>
+          {route?.params?.bookId && (
+            <>
+              <Tab.Screen name="Bình luận">
+                {() => (
+                  <BookDetail_Comment
+                    bookId={bookId}
+                    navigation={navigation}
+                    route={route}
+                  />
+                )}
+              </Tab.Screen>
+              <Tab.Screen name="Sách liên quan">
+                {() => (
+                  <BookRelated
+                    bookId={bookId}
+                    navigation={navigation}
+                    route={route}
+                  />
+                )}
+              </Tab.Screen>
+            </>
+          )}
           {/* <Tab.Screen name="Sách giấy">
             {() => (
               <ScrollView style={styles.container}>
@@ -291,16 +369,6 @@ const BookDetails = ({ route, navigation }: any) => {
               </ScrollView>
             )}
           </Tab.Screen> */}
-
-          <Tab.Screen name="Sách liên quan">
-            {() => (
-              <BookRelated
-                bookId={bookId}
-                navigation={navigation}
-                route={route}
-              />
-            )}
-          </Tab.Screen>
         </Tab.Navigator>
       </View>
 
@@ -313,8 +381,7 @@ const BookDetails = ({ route, navigation }: any) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            const res = axiosPrivate.post("user/read", { bookId: book._id });
-            navigation.navigate("BookReader", { bookId: book._id });
+            navigation.navigate("BookReader", { dataDowload: book });
           }}
           style={styles.readButton}
         >

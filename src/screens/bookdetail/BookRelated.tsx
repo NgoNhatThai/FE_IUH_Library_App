@@ -36,14 +36,18 @@ export default function BookRelated({ navigation, route, bookId }: any) {
   const renderItem = ({ item }: { item: any }) => (
     <View style={{ flex: 1 }}>
       <BookHorizontal
-        category={item?.category}
+        category={item?.categoryId?.name}
         image={item?.image}
         titleBottom={item?.price.toString()}
         bookTitle={item?.title}
-        authorName={item?.author}
+        authorName={item?.authorId?.name}
         onPress={() => {
           navigation.navigate("BookDetails", { bookId: item._id });
         }}
+        onPressCategory={() => {
+          navigation.navigate("CatergoryDetail", { item: item?.categoryId });
+        }}
+        star={item?.review?.rate}
         // onPressCategory={() => {
         //   navigation.navigate("CatergoryDetail", { item: item?. });
         // }}

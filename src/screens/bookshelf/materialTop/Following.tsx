@@ -65,6 +65,7 @@ export default function Following({ navigation }: any) {
         onPressCategory={() => {
           navigation.navigate("CatergoryDetail", { item: item?.categoryId });
         }}
+        star={item?.review?.rate}
       />
     );
   };
@@ -125,7 +126,7 @@ export default function Following({ navigation }: any) {
         >
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
-      ) : data.length > 0 ? (
+      ) : data?.length > 0 ? (
         <>
           <View
             style={{
@@ -138,7 +139,7 @@ export default function Following({ navigation }: any) {
             }}
           >
             <Text style={{ fontSize: 20, fontWeight: "bold", color: "black" }}>
-              {data.length} sách
+              {data?.length} sách
             </Text>
             <TouchableOpacity
               onPress={() => setModalVisibleDeleteALl(true)}
@@ -156,7 +157,6 @@ export default function Following({ navigation }: any) {
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
-            style={{ borderWidth: 1, borderColor: "red" }}
           />
         </>
       ) : (
