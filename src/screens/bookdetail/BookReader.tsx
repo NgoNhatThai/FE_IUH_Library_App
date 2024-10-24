@@ -24,24 +24,45 @@ const BookReader = ({ route, navigation }: any) => {
   const { bookId } = route.params;
   const [book, setBook] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [sound, setSound] = useState<Sound | null>(null);
   const [savedPage, setSavedPage] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
   const flatListRef = useRef<FlatList<any> | null>(null);
+  const [showModalTop, setShowModalTop] = useState(false);
   const [chapter, setChapter] = useState(0);
+
+  // các thuộc tính setting của chữ
+  const [currentSizeIndex, setCurrentSizeIndex] = useState(2);
+  const [textColor, setTextColor] = useState("black");
+  const [backgroundColor, setBackgroundColor] = useState("white");
+  const [fontFamily, setFontFamily] = useState("sans-serif");
+  const [readingDirection, setReadingDirection] = useState<
+    "auto" | "ltr" | "rtl"
+  >("ltr");
+  // các thuộc tính liên quan đến voice
+  const [isShowVoice, setIsShowVoice] = useState(false);
+  const [isNextPage, setIsNextPage] = useState(false);
+  // const [selectedVoice, setSelectedVoice] = useState<string | null>(null);
+  // const [speechRate, setSpeechRate] = useState(0.5);
+
   async function GetBook() {
     try {
       const res = await axiosPrivate.get(`book/get-detail-book/${bookId}`);
       setBook(res.data.data);
 
       // Kiểm tra xem sách đã có trong lịch sử chưa
-      const bookInHistory = history.find((item: any) => item.bookId === bookId);
+      // const bookInHistory = history.find((item: any) => item.bookId === bookId);
+      const bookInHistory = (history ?? []).find(
+        (item: any) => item.bookId === bookId
+      );
       console.log("bookInHistory", bookInHistory);
-      if (bookInHistory) {
-        setSavedPage(bookInHistory.currentPage); // Lưu trang đã lưu trong state
-        setModalVisible(true); // Hiển thị modal hỏi người dùng
-      } else {
-        setCurrentPage(0); // Nếu không có trong lịch sử, bắt đầu từ trang đầu
+      // kiểm tra xem có phải là trang tiếp theo không
+      if (route.params?.nextPage === undefined) {
+        if (bookInHistory) {
+          setSavedPage(bookInHistory.currentPage); // Lưu trang đã lưu trong state
+          setModalVisible(true); // Hiển thị modal hỏi người dùng
+        } else {
+          setCurrentPage(0); // Nếu không có trong lịch sử, bắt đầu từ trang đầu
+        }
       }
     } catch (e) {
       console.log("err", e);
@@ -77,12 +98,6 @@ const BookReader = ({ route, navigation }: any) => {
 
   useEffect(() => {
     // Dừng âm thanh khi currentPage thay đổi
-    if (sound) {
-      sound.stop(() => {
-        sound.release(); // Giải phóng tài nguyên khi không còn sử dụng
-        setSound(null);
-      });
-    }
 
     const totalpage = book?.content.chapters.reduce(
       (acc: any, chapter: any) => acc + chapter.numberOfPage,
@@ -100,7 +115,17 @@ const BookReader = ({ route, navigation }: any) => {
       });
     }
   }, [currentPage]);
+  useEffect(() => {
+    if (route.params?.nextPage !== undefined) {
+      setCurrentPage(route.params.nextPage);
 
+      flatListRef.current?.scrollToIndex({
+        index: route.params.nextPage,
+        animated: true,
+      });
+      setIsNextPage(true);
+    }
+  }, [route.params?.nextPage]);
   console.log("currentPage", currentPage);
 
   if (!book) {
@@ -113,36 +138,6 @@ const BookReader = ({ route, navigation }: any) => {
       </LinearGradient>
     );
   }
-
-  const playSound = (uri: string) => {
-    try {
-      const sound = new Sound(uri, "", (error) => {
-        if (error) {
-          console.log("Error loading sound:", error);
-          return;
-        }
-        sound.play((success: any) => {
-          if (success) {
-            setCurrentPage((prev) =>
-              Math.min(
-                prev + 1,
-                book.content.chapters.reduce(
-                  (acc: any, chapter: any) => acc + chapter.images.length + 1,
-                  2
-                )
-              )
-            );
-          } else {
-            console.log("Playback failed due to audio decoding errors");
-          }
-          sound.release(); // Giải phóng tài nguyên sau khi phát xong
-        });
-        setSound(sound); // Lưu đối tượng âm thanh hiện tại
-      });
-    } catch (e) {
-      console.log(`Cannot play the sound file`, e);
-    }
-  };
 
   const renderPage = ({ item, index }: any) => {
     if (index === 0) {
@@ -161,15 +156,12 @@ const BookReader = ({ route, navigation }: any) => {
         />
       );
     } else {
-      let pageIndex = index - 2;
+      let pageIndex = index - 2; // Giảm đi 2 vì trang đầu là bìa và trang thứ 2 là mục lục
       let chapterIndex = 0;
 
-      // Tìm chương tương ứng với chỉ số trang
-      while (
-        pageIndex >=
-        book.content.chapters[chapterIndex].images.length + 1
-      ) {
-        pageIndex -= book.content.chapters[chapterIndex].images.length + 1;
+      // Tính toán vị trí trang trong chương
+      while (pageIndex >= book.content.chapters[chapterIndex].text.length) {
+        pageIndex -= book.content.chapters[chapterIndex].text.length;
         chapterIndex += 1;
       }
 
@@ -182,16 +174,40 @@ const BookReader = ({ route, navigation }: any) => {
           </View>
         );
       } else {
-        const imageIndex = pageIndex - 1;
+        const textIndex = pageIndex - 1;
+
         return (
           <ChapterPage
             currentPage={currentPage}
+            pageIndex={index} // Truyền pageIndex vào ChapterPage
             id={bookId || route.params.dataDowload._id}
             chapter={book.content.chapters[chapterIndex]}
-            imageIndex={imageIndex}
-            playSound={playSound}
+            chapters={book?.content?.chapters}
+            textIndex={textIndex} // Sử dụng textIndex mới
             navigation={navigation}
             type={book.type}
+            showModalTop={showModalTop}
+            setShowModalTop={setShowModalTop}
+            currentSizeIndex={currentSizeIndex}
+            setCurrentSizeIndex={setCurrentSizeIndex}
+            textColor={textColor}
+            setTextColor={setTextColor}
+            backgroundColor={backgroundColor}
+            setBackgroundColor={setBackgroundColor}
+            fontFamily={fontFamily}
+            setFontFamily={setFontFamily}
+            readingDirection={readingDirection}
+            setReadingDirection={setReadingDirection}
+            setCurrentPage={setCurrentPage}
+            setChapter={setChapter}
+            isShowVoice={isShowVoice}
+            setIsShowVoice={setIsShowVoice}
+            isNextPage={isNextPage}
+            setIsNextPage={setIsNextPage}
+            // selectedVoice={selectedVoice}
+            // setSelectedVoice={setSelectedVoice}
+            // speechRate={speechRate}
+            // setSpeechRate={setSpeechRate}
           />
         );
       }
@@ -262,6 +278,7 @@ const BookReader = ({ route, navigation }: any) => {
             )
           ),
         ]}
+        initialScrollIndex={currentPage}
         renderItem={renderPage}
         keyExtractor={(_, index) => index?.toString()}
         horizontal

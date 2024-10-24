@@ -45,7 +45,11 @@ export default function Discover({ navigation }: any) {
   }
   useFocusEffect(
     useCallback(() => {
-      GetBookSuggest();
+      if (user) {
+        GetBookSuggest();
+      } else {
+        setLoading(false);
+      }
       LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
       LogBox.ignoreLogs([
         "`flexWrap: `wrap`` is not supported with the `VirtualizedList` components",

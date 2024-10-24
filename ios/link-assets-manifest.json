@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/AfacadFlux-Black.ttf",
+      "sha1": "cc8da61cd60accc3a429e9eb2b409e6e2826ef5c"
+    },
+    {
+      "path": "src/assets/fonts/OpenDyslexic3-Bold.ttf",
+      "sha1": "1f1349a243bb11037c4430185ff83969df85506a"
+    }
+  ]
+}

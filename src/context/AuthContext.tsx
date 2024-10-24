@@ -28,7 +28,7 @@ type AuthContextType = {
   config: any;
   login: ({ userData, token }: { userData: any; token: any }) => void;
   logout: () => void;
-  history?: History[];
+  history?: History[] | undefined;
   addHistory: (newHistory: History) => void;
   token: string | null;
   keySearch: KeySearch[];
@@ -60,9 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const loadData = async () => {
       try {
         const userData = await AsyncStorage.getItem("user");
-        const configg = await axiosPrivate.get(
-          "admin/get-config/66c494eba011ad39b8b63880"
-        );
+        const configg = await axiosPrivate.get("admin/get-config");
         const token = await AsyncStorage.getItem("token");
         const configData = await AsyncStorage.getItem("config");
         const historyData = await AsyncStorage.getItem("history");
