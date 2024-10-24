@@ -37,6 +37,7 @@ export default function Account({ navigation }: any) {
             >
               {user?.studentCode.userName}
             </Text>
+
             <TouchableOpacity
               onPress={() => {
                 logout();
@@ -79,6 +80,27 @@ export default function Account({ navigation }: any) {
           </>
         )}
       </View>
+      {user && (
+        <View style={[styles.ViewDetail, { marginTop: 5 }]}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Wallet");
+            }}
+            style={{
+              flexDirection: "row",
+              width: "90%",
+              // justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontSize: 18, color: "gray" }}>Xu của tôi: </Text>
+            <Text style={{ fontSize: 18, color: "black" }}>
+              {user?.studentCode.studentCode}{" "}
+              <Text style={{ fontSize: 18, color: "gray" }}>đ</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </LinearGradient>
   );
 }
@@ -95,6 +117,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     justifyContent: "center",
+    alignItems: "center",
+  },
+  ViewDetail: {
+    padding: 10,
+    width: width * 0.95,
+    height: height * 0.25,
+    marginTop: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginBottom: 10,
     alignItems: "center",
   },
 });

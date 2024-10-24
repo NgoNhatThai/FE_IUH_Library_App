@@ -2,8 +2,18 @@ import React from "react";
 import { View, Text, Image, TouchableOpacity, Dimensions } from "react-native";
 
 const { width } = Dimensions.get("window");
-
-const TocPage = ({ chapters, setCurrentPage, setChapter }: any) => {
+type TocPageProps = {
+  chapters: any;
+  setCurrentPage: any;
+  setChapter: any;
+  widthH?: number;
+};
+const TocPage = ({
+  chapters,
+  setCurrentPage,
+  setChapter,
+  widthH,
+}: TocPageProps) => {
   const calculatePageIndex = (chapterIndex: number) => {
     let pageIndex = 2; // Bắt đầu từ trang thứ 3 (bỏ qua trang bìa và mục lục)
 
@@ -15,10 +25,12 @@ const TocPage = ({ chapters, setCurrentPage, setChapter }: any) => {
     return pageIndex; // Trả về chỉ số trang của chương hiện tại
   };
   return (
-    <View style={{ width }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", padding: 10 }}>
-        Mục lục
-      </Text>
+    <View style={{ width: widthH ? widthH : width }}>
+      <View style={{ alignItems: "center" }}>
+        <Text style={{ fontSize: 24, fontWeight: "bold", padding: 10 }}>
+          Mục lục
+        </Text>
+      </View>
       {chapters.map((chapter: any, i: number) => (
         <TouchableOpacity
           key={i}
@@ -36,7 +48,9 @@ const TocPage = ({ chapters, setCurrentPage, setChapter }: any) => {
             setChapter(pageIndex);
           }}
         >
-          <Text style={{ padding: 10 }}>{chapter.title}</Text>
+          <Text style={{ padding: 10, fontSize: 22, fontWeight: 600 }}>
+            {chapter.title}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>

@@ -10,6 +10,8 @@ import {
   SignUp,
   RecentlyDetail,
   SuggestDetail,
+  Wallet,
+  Deposit,
 } from "../screens/index";
 const Stack = createNativeStackNavigator();
 import ChapterPage from "../components/ChapterPage";
@@ -25,6 +27,8 @@ const HomeNavigator = () => {
       <Stack.Screen name="CatergoryDetail" component={CatergoryDetail} />
       <Stack.Screen name="RecentlyDetail" component={RecentlyDetail} />
       <Stack.Screen name="SuggestDetail" component={SuggestDetail} />
+      <Stack.Screen name="Wallet" component={Wallet} />
+      <Stack.Screen name="Deposit" component={Deposit} />
     </Stack.Navigator>
   );
 };

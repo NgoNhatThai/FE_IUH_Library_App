@@ -122,7 +122,7 @@ export default function AllNotify({ navigation }: any) {
       {loading ? (
         // Show loading spinner when data is being fetched
         <ActivityIndicator size="large" color="#0000ff" />
-      ) : data.length > 0 ? (
+      ) : data?.length > 0 ? (
         <FlatList
           data={data}
           renderItem={renderItem}
