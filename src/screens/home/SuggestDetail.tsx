@@ -81,7 +81,7 @@ export default function SuggestDetail({ route, navigation }: any) {
 
       {dataBookSuggest?.length > 0 ? (
         <FlatList
-          data={dataBookSuggest?.slice(0, 6)}
+          data={dataBookSuggest}
           renderItem={renderItem}
           keyExtractor={(item: any) => item._id}
           numColumns={3}

@@ -101,7 +101,6 @@ export default function BookDetail_Comment({ navigation, route, bookId }: any) {
           bookId: bookId,
           comment: commentText,
         });
-
         setCommentText("");
         setModalCommentVisible(false);
         fetchData();
@@ -197,14 +196,15 @@ export default function BookDetail_Comment({ navigation, route, bookId }: any) {
       try {
         const res = await axiosPrivate.post(`user/rate`, {
           userId: user?.studentCode?._id,
-          bookId: route.params.book._id,
+          bookId: route.params.bookId,
           rating: rating,
         });
+        console.log("res", res);
         setRating(0);
         setModalRatingVisible(false);
-        fetchData();
+        // fetchData();
       } catch (error) {
-        console.log(error);
+        console.log("error", error);
       }
     }
   };

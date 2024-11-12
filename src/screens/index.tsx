@@ -19,3 +19,4 @@ export { default as Following } from "./bookshelf/materialTop/Following";
 export { default as RecentlyDetail } from "./home/RecentlyDetail";
 export { default as SuggestDetail } from "./home/SuggestDetail";
 export { default as Dowload } from "./bookshelf/materialTop/Dowload";
+export { default as PersonalStatistics } from "./account/statistical/PersonalStatistics";
