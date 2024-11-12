@@ -77,9 +77,16 @@ export default function CatergoryDetail({ route, navigation }: any) {
           backgroundColor: "#fff",
           borderRadius: 10,
           padding: 10,
+          marginBottom: 10,
         }}
       >
-        <Text style={{ fontSize: 16, color: "black", textAlign: "justify" }}>
+        <Text
+          style={{
+            fontSize: 16,
+            color: "black",
+            textAlign: "justify",
+          }}
+        >
           {item?.desc}
         </Text>
       </View>

@@ -6,7 +6,7 @@ import queryString from "query-string";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // const BASE_URL = REACT_APP_API_URL || "http://localhost:5500/api";
 const BASE_URL = REACT_APP_API_URL;
-console.log("o5aas ", BASE_URL);
+console.log("o5aaâs ", BASE_URL);
 const axiosPrivate = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
@@ -20,7 +20,7 @@ axiosPrivate.interceptors.request.use(
     // console.log(BASE_URL)
     // console.log(auth.currentUser)
     const token = (await AsyncStorage.getItem("token")) || "";
-
+    // console.log("token", token);
     config.headers["Authorization"] = `Bearer ${token}`;
     return config;
   },

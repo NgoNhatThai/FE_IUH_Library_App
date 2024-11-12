@@ -52,7 +52,7 @@ export default function AllNotify({ navigation }: any) {
       <TouchableOpacity
         style={{
           width: width * 0.96,
-          height: 130,
+          height: 150,
           backgroundColor: item?.status == "READ" ? "#fff" : "#F2F6FC",
           alignItems: "center",
           justifyContent: "center",
@@ -100,7 +100,7 @@ export default function AllNotify({ navigation }: any) {
             width: "70%",
             alignItems: "flex-start",
             justifyContent: "center",
-            gap: 10,
+            gap: 7,
           }}
         >
           <Text style={{ fontSize: 19, fontWeight: "bold", color: "black" }}>

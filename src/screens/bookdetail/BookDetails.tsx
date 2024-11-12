@@ -55,7 +55,25 @@ const BookDetails = ({ route, navigation }: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isBuy, setIsBuy] = useState(false);
+  const [modalBuyBook, setModalBuyBook] = useState(false);
+  async function CheckBuy() {
+    try {
+      if (!user) {
+        console.log("User is null");
+        return;
+      }
+      const res = await axiosPrivate.get(
+        `user/get-user-book-mark?userId=${user.studentCode._id}&bookId=${bookId}`
+      );
 
+      if (res.data?.data?.isBuy) {
+        setIsBuy(true);
+      }
+    } catch (e) {
+      console.log("err", e);
+    }
+  }
   async function GetBook() {
     try {
       const res = await axiosPrivate.get(`book/get-detail-book/${bookId}`);
@@ -159,6 +177,7 @@ const BookDetails = ({ route, navigation }: any) => {
       if (route?.params?.bookId) {
         GetBook();
         fetchDownloadedBooks();
+        CheckBuy();
         if (user) {
           CheckFolow(user.studentCode._id);
         }
@@ -209,6 +228,61 @@ const BookDetails = ({ route, navigation }: any) => {
               style={styles.cancelButton}
             >
               <Text style={styles.cancelButtonText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+  const renderBuyBookModal = () => (
+    <Modal
+      transparent={true}
+      visible={modalBuyBook}
+      onRequestClose={() => setModalBuyBook(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Xác nhận mua sách</Text>
+          <Text style={styles.modalText}>
+            Xác nhận mua {book?.title} với giá là {book?.price}đ ?
+          </Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              onPress={() => setModalBuyBook(false)}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelButtonText}>Hủy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  if (!user) {
+                    setModalVisible(true);
+                    return;
+                  }
+                  const res = await axiosPrivate.post("user/buy-book", {
+                    userId: user.studentCode._id,
+                    bookId: bookId,
+                  });
+                  if (res.data.status === 400) {
+                    ToastError({
+                      text2: "Số dư không đủ!",
+                    });
+                    setModalBuyBook(false);
+
+                    return;
+                  }
+                  CheckBuy();
+                  GetBook();
+                  setModalBuyBook(false);
+                  ToastSuscess({ text1: "Mua sách thành công!" });
+                } catch (e) {
+                  console.log("err", e);
+                }
+              }}
+              style={styles.loginButton}
+            >
+              <Text style={styles.loginButtonText}>Xác nhận</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -379,16 +453,33 @@ const BookDetails = ({ route, navigation }: any) => {
             {isFolow ? "Bỏ theo dõi" : "Theo dõi"}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("BookReader", { dataDowload: book });
-          }}
-          style={styles.readButton}
-        >
-          <Text style={styles.readButtonText}>Đọc Sách</Text>
-        </TouchableOpacity>
+        {book.price > 0 && !isBuy ? (
+          <TouchableOpacity
+            onPress={() => {
+              if (!user) {
+                setModalVisible(true);
+                return;
+              } else {
+                setModalBuyBook(true);
+              }
+            }}
+            style={styles.readButton}
+          >
+            <Text style={styles.readButtonText}>Mua Sách</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("BookReader", { dataDowload: book });
+            }}
+            style={styles.readButton}
+          >
+            <Text style={styles.readButtonText}>Đọc Sách</Text>
+          </TouchableOpacity>
+        )}
       </View>
       {renderLoginModal()}
+      {renderBuyBookModal()}
     </View>
   );
 };
