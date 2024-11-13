@@ -53,7 +53,7 @@ export default function AllNotify({ navigation }: any) {
         style={{
           width: width * 0.96,
           height: 150,
-          backgroundColor: item?.status == "READ" ? "#fff" : "#F2F6FC",
+          backgroundColor: item?.status == "READ" ? "#fff" : "#E0F7F4",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
@@ -118,7 +118,14 @@ export default function AllNotify({ navigation }: any) {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingTop: 10,
+      }}
+    >
       {loading ? (
         // Show loading spinner when data is being fetched
         <ActivityIndicator size="large" color="#0000ff" />

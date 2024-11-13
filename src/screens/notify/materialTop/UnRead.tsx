@@ -57,7 +57,7 @@ export default function Unread({ navigation }: any) {
         style={{
           width: width * 0.96,
           height: 150,
-          backgroundColor: "#F2F6FC",
+          backgroundColor: "#E0F7F4",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
@@ -110,7 +110,14 @@ export default function Unread({ navigation }: any) {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingTop: 10,
+      }}
+    >
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : data.length > 0 ? (

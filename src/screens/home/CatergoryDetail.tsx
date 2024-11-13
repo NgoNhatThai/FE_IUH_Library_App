@@ -41,6 +41,7 @@ export default function CatergoryDetail({ route, navigation }: any) {
       onPress={() => {
         navigation.navigate("BookDetails", { bookId: item._id });
       }}
+      type={item?.type}
     />
   );
 

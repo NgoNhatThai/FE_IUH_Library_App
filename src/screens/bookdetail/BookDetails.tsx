@@ -45,6 +45,8 @@ type Book = {
   image: string;
   review: any;
   desc: string;
+  content: any;
+  price: number;
 };
 
 const BookDetails = ({ route, navigation }: any) => {
@@ -172,6 +174,7 @@ const BookDetails = ({ route, navigation }: any) => {
       console.error("Lỗi khi lấy danh sách sách đã tải:", error);
     }
   };
+
   useFocusEffect(
     useCallback(() => {
       if (route?.params?.bookId) {
@@ -328,6 +331,36 @@ const BookDetails = ({ route, navigation }: any) => {
       setIsDownloading(false);
     }
   };
+  // hàm đọc sách
+  const handelReadBook = async () => {
+    if (route?.params?.bookId) {
+      if (user) {
+        try {
+          // kiểm tra xem đã đọc chưa, nếu chưa thì thêm vào danh sách đọc
+          const res = await axiosPrivate.get(
+            `user/get-user-book-mark?userId=${user?.studentCode?._id}&bookId=${bookId}`
+          );
+          console.log("res", res.data?.data?.readChapterIds);
+          if (res.data?.data?.readChapterIds?.length > 0) {
+            navigation.navigate("BookReader", { bookId: bookId });
+          } else {
+            const res = await axiosPrivate.post(`user/read`, {
+              userId: user?.studentCode?._id,
+              bookId: bookId,
+              chapterId: book?.content?.chapters[0]?._id,
+            });
+            navigation.navigate("BookReader", { bookId: bookId });
+          }
+        } catch (e) {
+          console.log("err", e);
+        }
+      } else {
+        navigation.navigate("BookReader", { bookId: bookId });
+      }
+    } else {
+      navigation.navigate("BookReader", { dataDowload: book });
+    }
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -468,12 +501,7 @@ const BookDetails = ({ route, navigation }: any) => {
             <Text style={styles.readButtonText}>Mua Sách</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("BookReader", { dataDowload: book });
-            }}
-            style={styles.readButton}
-          >
+          <TouchableOpacity onPress={handelReadBook} style={styles.readButton}>
             <Text style={styles.readButtonText}>Đọc Sách</Text>
           </TouchableOpacity>
         )}

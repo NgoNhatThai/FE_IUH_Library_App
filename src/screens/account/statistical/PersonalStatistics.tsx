@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { LineChart } from "react-native-chart-kit";
+import { LineChart, BarChart } from "react-native-chart-kit";
 import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/Ionicons";
 import axiosPrivate from "../../../api/axiosPrivate";
@@ -25,14 +25,19 @@ export default function PersonalStatistics({ navigation }: any) {
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-
   const getDataRead = async () => {
     setLoading(true);
     if (startDate && endDate) {
       try {
+        console.log("id", user?.studentCode?._id);
         const response = await axiosPrivate(
-          `overview/get-read-time-overview?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&userId=66f5729701b474699497f9d6`
+          `overview/get-read-time-overview?startDate=${
+            startDate.toISOString().split("T")[0]
+          }&endDate=${endDate.toISOString().split("T")[0]}&userId=${
+            user?.studentCode?._id
+          }`
         );
+        console.log("res", response.data.details[0]);
         setDataRead(response.data);
       } catch (error) {
         console.error(error);
@@ -72,14 +77,41 @@ export default function PersonalStatistics({ navigation }: any) {
       },
     ],
   };
-
+  const totalDays =
+    startDate && endDate
+      ? Math.ceil(
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+        )
+      : 0;
   const chartConfig = {
-    backgroundGradientFrom: "#ffffff",
-    backgroundGradientTo: "#ffffff",
+    backgroundGradientFrom: "#f5f7fa",
+    backgroundGradientTo: "#f5f7fa",
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    barPercentage: 0.5, // Tăng khoảng cách giữa các cột
     decimalPlaces: 0,
+    propsForLabels: {
+      fontSize: 12,
+      fontWeight: "bold",
+      fill: "#333",
+    },
     propsForVerticalLabels: {
-      rotation: 45, // Xoay nhãn ngày 45 độ
+      rotation: 45,
+      fontSize: 12,
+      fontWeight: "bold",
+      fill: "#4A90E2", // Màu cho nhãn dọc
+    },
+    propsForHorizontalLabels: {
+      fontSize: 12,
+      fontWeight: "bold",
+      fill: "#8CBA51", // Màu cho nhãn ngang
+    },
+    fillShadowGradient: "#4A90E2",
+    fillShadowGradientOpacity: 0.8,
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientToOpacity: 0,
+    propsForBackgroundLines: {
+      stroke: "#e3e3e3",
+      strokeDasharray: "5,5",
     },
   };
 
@@ -188,19 +220,19 @@ export default function PersonalStatistics({ navigation }: any) {
         </Text>
       ) : (
         <>
-          <LineChart
+          <BarChart
             data={chartData}
             width={screenWidth * 0.95}
             height={300}
             yAxisLabel=""
             yAxisSuffix=" phút"
             chartConfig={chartConfig}
-            bezier
             fromZero
             style={{ marginVertical: 8, borderRadius: 16 }}
           />
           <Text style={styles.averageText}>
-            Thời gian đọc trung bình: {averageReadTime.toFixed(1)} phút
+            Thời gian đọc trung bình: {averageReadTime.toFixed(1)} phút trong
+            vòng {totalDays} ngày
           </Text>
         </>
       )}

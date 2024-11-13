@@ -26,6 +26,8 @@ export default function Discover({ navigation }: any) {
   const { config, history, user, token } = useAuth();
   const [dataBookSuggest, setDataBookSuggest] = useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [loadingRecently, setLoadingRecently] = React.useState(true);
+  const [dataBookRecently, setDataBookRecently] = useState(history);
   async function GetBookSuggest() {
     setLoading(true);
     try {
@@ -43,25 +45,49 @@ export default function Discover({ navigation }: any) {
       setLoading(false);
     }
   }
+  const getBookRecently = async () => {
+    if (user) {
+      setLoadingRecently(true);
+      try {
+        const res = await axiosPrivate.get(
+          `user/get-user-read-history?userId=${user?.studentCode?._id}`
+        );
+
+        setDataBookRecently(res.data.data);
+      } catch (e) {
+        console.log("erre", e);
+      } finally {
+        setLoadingRecently(false);
+      }
+    } else {
+      setDataBookRecently(history);
+      setLoadingRecently(false);
+    }
+  };
   useFocusEffect(
     useCallback(() => {
+      getBookRecently();
+
       if (user) {
         GetBookSuggest();
       } else {
+        setDataBookSuggest([]);
         setLoading(false);
+        setLoadingRecently(false);
       }
       LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
       LogBox.ignoreLogs([
         "`flexWrap: `wrap`` is not supported with the `VirtualizedList` components",
       ]);
-    }, [user])
+    }, [user, history])
   );
   const renderBookRecently = ({ item }: any) => (
     <BookRecently
       bookID={item.bookId}
-      percent={item.percent}
-      title={item.title}
-      image={item.image}
+      // percent={item.percent}
+      title={item.detail?.title}
+      image={item.detail?.image}
+      author={item.detail?.authorId?.name}
       onPress={() =>
         navigation.navigate("BookDetails", { bookId: item.bookId })
       }
@@ -142,9 +168,9 @@ export default function Discover({ navigation }: any) {
             onPress={() => navigation.navigate("RecentlyDetail")}
           />
         </View>
-        {history?.length > 0 ? (
+        {dataBookRecently?.length > 0 ? (
           <FlatList
-            data={history}
+            data={dataBookRecently}
             renderItem={renderBookRecently}
             keyExtractor={(item: any) => item?.bookId?.toString()}
             horizontal
@@ -170,7 +196,15 @@ export default function Discover({ navigation }: any) {
           />
         </View>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              height: 200,
+            }}
+            size="large"
+            color="#0000ff"
+          />
         ) : dataBookSuggest?.length > 0 ? (
           <FlatList
             data={dataBookSuggest?.slice(0, 6)}
@@ -284,5 +318,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 0,
+    height: height * 0.13,
   },
 });

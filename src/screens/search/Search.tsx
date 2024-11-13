@@ -89,6 +89,7 @@ export default function Search({ navigation }: any) {
         navigation.navigate("CatergoryDetail", { item: item?.categoryId });
       }}
       star={item?.review[0]?.rate}
+      type={item?.type}
     />
   );
   const renderItemKey = (item: any) => {
