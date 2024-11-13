@@ -12,7 +12,9 @@ type BookRecentlyProps = {
   bookID: string;
   image: string;
   title: string;
-  percent: number;
+  percent?: number;
+  catergory?: string;
+  author?: string;
   onPress: (bookID: string) => void;
 };
 
@@ -26,6 +28,8 @@ const BookRecently: React.FC<BookRecentlyProps> = ({
   image,
   title,
   percent,
+  author,
+  catergory,
   onPress,
 }) => {
   return (
@@ -36,19 +40,36 @@ const BookRecently: React.FC<BookRecentlyProps> = ({
     >
       <View style={styles.row}>
         <Image source={{ uri: image }} style={styles.image} />
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
-      </View>
-      <View style={styles.progressContainer}>
         <View
-          style={[
-            styles.progressBar,
-            { width: `${percent >= 80 ? percent - 20 : percent}%` },
-          ]}
-        />
-        <Text style={styles.percentText}>{percent}%</Text>
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            gap: 5,
+          }}
+        >
+          {/* style cho author và catergory đẹp tí nào */}
+          <Text style={styles.title}>{title}</Text>
+          <Text
+            style={{
+              fontSize: 12,
+              color: "#333",
+            }}
+          >
+            {author}
+          </Text>
+        </View>
       </View>
+      {percent !== undefined && (
+        <View style={styles.progressContainer}>
+          <View
+            style={[
+              styles.progressBar,
+              { width: `${percent >= 80 ? percent - 20 : percent}%` },
+            ]}
+          />
+          <Text style={styles.percentText}>{percent}%</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -79,7 +100,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   title: {
-    flex: 1,
     fontSize: 14,
     fontWeight: "bold",
     color: "#333",

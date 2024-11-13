@@ -26,6 +26,7 @@ type BookProps = {
   fileSize?: string;
   onPressDeteleDowload?: () => void;
   star: number;
+  type?: string;
 };
 
 const { width } = Dimensions.get("window");
@@ -44,6 +45,7 @@ const BookHorizontal: React.FC<BookProps> = ({
   fileSize,
   onPressDeteleDowload,
   star,
+  type,
 }) => {
   const [modalMenuVisible, setModalMenuVisible] = useState(false);
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
@@ -51,6 +53,9 @@ const BookHorizontal: React.FC<BookProps> = ({
     const { pageX, pageY } = event.nativeEvent;
     setModalPosition({ x: pageX, y: pageY });
     setModalMenuVisible(true);
+  };
+  const formatMoney = (n: String) => {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   const renderMenu = () => (
     <Modal
@@ -89,9 +94,16 @@ const BookHorizontal: React.FC<BookProps> = ({
     >
       <View style={styles.imageContainer}>
         <Image source={{ uri: image }} style={styles.image} />
+        {type && type != "NORMAL" && (
+          <View style={styles.typeBadge}>
+            <Text style={styles.priceText}>
+              {type == "IMAGE" ? "PDF" : "EPUB"}
+            </Text>
+          </View>
+        )}
         {titleBottom && (
           <View style={styles.priceBadge}>
-            <Text style={styles.priceText}>{titleBottom}</Text>
+            <Text style={styles.priceText}>{formatMoney(titleBottom)} đ</Text>
           </View>
         )}
       </View>
@@ -188,9 +200,18 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
-  priceBadge: {
+  typeBadge: {
     position: "absolute",
     top: 8,
+    left: 8,
+    backgroundColor: "#FF9F43",
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  priceBadge: {
+    position: "absolute",
+    bottom: 8,
     left: 8,
     backgroundColor: "#2D9CDB",
     paddingVertical: 2,

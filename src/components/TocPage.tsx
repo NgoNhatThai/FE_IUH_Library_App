@@ -45,6 +45,7 @@ const TocPage = ({
             // setCurrentPage(2 + i * chapter.images.length);
             // setChapter(i * chapter.images.length);
             const pageIndex = calculatePageIndex(i);
+            setCurrentPage(pageIndex);
             setChapter(pageIndex);
           }}
         >

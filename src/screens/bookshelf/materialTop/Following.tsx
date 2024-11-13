@@ -32,6 +32,7 @@ export default function Following({ navigation }: any) {
       const response = await axiosPrivate.get(
         `user/get-follow-list?userId=${user?.studentCode._id}&pageIndex=0&pageSize=10`
       );
+      console.log("response", response.data.data);
       setData(response?.data?.data);
     } catch (error) {
       console.log(error);
@@ -66,6 +67,7 @@ export default function Following({ navigation }: any) {
           navigation.navigate("CatergoryDetail", { item: item?.categoryId });
         }}
         star={item?.review?.rate}
+        type={item?.type}
       />
     );
   };

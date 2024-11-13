@@ -14,6 +14,7 @@ type BookProps = {
   titleBottom?: string;
   bookTitle: string;
   authorName: string;
+  type: string;
   onPress: () => void;
 };
 
@@ -24,9 +25,13 @@ const Book: React.FC<BookProps> = ({
   image,
   titleBottom,
   bookTitle,
+  type,
   authorName,
   onPress,
 }) => {
+  const formatMoney = (n: String) => {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
   return (
     <TouchableOpacity
       style={styles.container}
@@ -40,9 +45,16 @@ const Book: React.FC<BookProps> = ({
             <Text style={styles.categoryText}>{category}</Text>
           </View>
         )}
+        {type && type != "NORMAL" && (
+          <View style={styles.typeBadge}>
+            <Text style={styles.priceText}>
+              {type == "IMAGE" ? "PDF" : "EPUB"}
+            </Text>
+          </View>
+        )}
         {titleBottom && (
           <View style={styles.priceBadge}>
-            <Text style={styles.priceText}>{titleBottom} VNĐ</Text>
+            <Text style={styles.priceText}>{formatMoney(titleBottom)} đ</Text>
           </View>
         )}
       </View>
@@ -103,6 +115,15 @@ const styles = StyleSheet.create({
     bottom: 8,
     left: 8,
     backgroundColor: "#68CAE3",
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  typeBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#FF9F43",
     paddingVertical: 2,
     paddingHorizontal: 6,
     borderRadius: 4,

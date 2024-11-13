@@ -34,12 +34,19 @@ type AuthContextType = {
   keySearch: KeySearch[];
   addKeySearch: (newKeySearch: KeySearch) => void;
 };
+
 type History = {
   bookId: string;
-  image: string;
-  title: string;
-  currentPage: number;
-  percent: number;
+  detail: {
+    _id: string;
+    title: string;
+    authorId: {
+      _id: string;
+      name: string;
+    };
+    image: string;
+  };
+  lastReadChapterId: string;
 };
 type AuthProviderProps = {
   children: ReactNode;
@@ -122,16 +129,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       let updatedHistory: History[] = [];
 
       if (existingBookIndex !== -1) {
-        // Nếu sách đã có trong history, cập nhật currentPage và percent
-        updatedHistory = history.map((item: History, index: number) =>
-          index === existingBookIndex
-            ? {
-                ...item,
-                currentPage: newHistory.currentPage,
-                percent: newHistory.percent,
-              }
-            : item
-        );
+        // Nếu sách đã có trong history, xóa sách cũ và đẩy sách lên đầu mảng với lastReadChapterId mới
+        updatedHistory = [
+          {
+            ...history[existingBookIndex],
+            lastReadChapterId: newHistory.lastReadChapterId,
+          },
+          ...history.filter((_, index) => index !== existingBookIndex),
+        ];
       } else {
         // Nếu sách chưa có, thêm mới vào history
         updatedHistory = [newHistory, ...history];

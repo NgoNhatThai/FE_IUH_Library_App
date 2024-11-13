@@ -23,6 +23,7 @@ import Tts, { Voice } from "react-native-tts";
 
 const ChapterPage = ({
   id,
+  route,
   chapter,
   textIndex,
   // biến lưu tổng mảng chương
@@ -52,6 +53,7 @@ const ChapterPage = ({
   pageIndex,
   isNextPage,
   setIsNextPage,
+  handleExitPage,
 }: // selectedVoice,
 // setSelectedVoice,
 // speechRate,
@@ -634,9 +636,7 @@ any) => {
           <View style={[styles.modal, styles.modalTop]}>
             <TouchableOpacity
               style={{ position: "absolute", left: 10, top: 10, padding: 10 }}
-              onPress={() => {
-                navigation.navigate("BookDetails", { bookId: id });
-              }}
+              onPress={handleExitPage}
             >
               <Icon name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
