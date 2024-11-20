@@ -30,12 +30,19 @@ export default function PersonalStatistics({ navigation }: any) {
     if (startDate && endDate) {
       try {
         console.log("id", user?.studentCode?._id);
+        const formattedStartDate = new Date(
+          startDate.getTime() - startDate.getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .split("T")[0];
+        const formattedEndDate = new Date(
+          endDate.getTime() - endDate.getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .split("T")[0];
+
         const response = await axiosPrivate(
-          `overview/get-read-time-overview?startDate=${
-            startDate.toISOString().split("T")[0]
-          }&endDate=${endDate.toISOString().split("T")[0]}&userId=${
-            user?.studentCode?._id
-          }`
+          `overview/get-read-time-overview?startDate=${formattedStartDate}&endDate=${formattedEndDate}&userId=${user?.studentCode?._id}`
         );
         console.log("res", response.data.details[0]);
         setDataRead(response.data);
@@ -80,7 +87,7 @@ export default function PersonalStatistics({ navigation }: any) {
   const totalDays =
     startDate && endDate
       ? Math.ceil(
-          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+          (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1
         )
       : 0;
   const chartConfig = {
@@ -114,6 +121,9 @@ export default function PersonalStatistics({ navigation }: any) {
       strokeDasharray: "5,5",
     },
   };
+  const readingDays = filteredData.length;
+  const readingRate =
+    totalDays > 0 ? ((readingDays / totalDays) * 100).toFixed(2) : 0;
 
   return (
     <View style={styles.container}>
@@ -233,6 +243,10 @@ export default function PersonalStatistics({ navigation }: any) {
           <Text style={styles.averageText}>
             Thời gian đọc trung bình: {averageReadTime.toFixed(1)} phút trong
             vòng {totalDays} ngày
+          </Text>
+          <Text style={styles.averageText}>
+            Tỉ lệ đọc sách hằng ngày: {readingRate}% (số ngày đọc: {readingDays}
+            /{totalDays})
           </Text>
         </>
       )}

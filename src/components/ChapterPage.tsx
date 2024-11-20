@@ -640,9 +640,9 @@ any) => {
             >
               <Icon name="arrow-back" size={24} color="#fff" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleSearch}>
+            {/* <TouchableOpacity onPress={handleSearch}>
               <Feather name="search" size={24} color="#fff" />
-            </TouchableOpacity>
+            </TouchableOpacity>  */}
             {type === "VOICE" && (
               <TouchableOpacity
                 // onPress={() => {
@@ -655,9 +655,9 @@ any) => {
                 <FontAwesome6 name="headphones-simple" size={24} color="#fff" />
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={handleBookMark}>
+            {/* <TouchableOpacity onPress={handleBookMark}>
               <FontAwesome name="bookmark" size={24} color="#fff" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity onPress={() => setModalVisibleSetting(true)}>
               <Ionicons name="settings" size={24} color="#fff" />
             </TouchableOpacity>
