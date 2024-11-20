@@ -108,10 +108,10 @@ export default function Wallet({ navigation }: any) {
         ))}
       <DataTable.Pagination
         page={page}
-        numberOfPages={Math.ceil(anmount.history?.length / itemsPerPage)}
+        numberOfPages={Math.ceil(anmount?.history?.length / itemsPerPage)}
         onPageChange={(page) => setPage(page)}
         label={`${page * itemsPerPage + 1}-${(page + 1) * itemsPerPage} of ${
-          anmount.history?.length
+          anmount?.history?.length
         }`}
         showFastPaginationControls
       />

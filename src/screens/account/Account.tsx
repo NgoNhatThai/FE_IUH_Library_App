@@ -152,7 +152,11 @@ export default function Account({ navigation }: any) {
                   Tiền của tôi:{" "}
                   <Text style={{ fontSize: 18, color: "black" }}>
                     {formatCash(anmount?.total)}{" "}
-                    <Text style={{ fontSize: 18, color: "gray" }}>đ</Text>
+                    {anmount?.total > 0 ? (
+                      <Text style={{ fontSize: 18, color: "gray" }}>đ</Text>
+                    ) : (
+                      <Text style={{ fontSize: 18, color: "gray" }}>0 đ</Text>
+                    )}
                   </Text>
                 </Text>
 
