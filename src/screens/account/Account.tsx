@@ -14,6 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import axiosPrivate from "../../api/axiosPrivate";
 const { width, height } = Dimensions.get("window");
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function Account({ navigation }: any) {
   const { config, logout, user } = useAuth();
@@ -140,7 +141,7 @@ export default function Account({ navigation }: any) {
                   width: "90%",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  gap: 5,
+                  gap: 10,
                 }}
               >
                 <MaterialIcons
@@ -176,7 +177,7 @@ export default function Account({ navigation }: any) {
                   width: "90%",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  gap: 5,
+                  gap: 10,
                 }}
               >
                 <MaterialIcons name="history" size={30} color={"#E48641"} />
@@ -199,10 +200,14 @@ export default function Account({ navigation }: any) {
                   width: "90%",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  gap: 5,
+                  gap: 10,
                 }}
               >
-                <MaterialIcons name="history" size={30} color={"#E48641"} />
+                <Ionicons
+                  name="stats-chart-outline"
+                  size={30}
+                  color={"#E48641"}
+                />
                 <Text style={{ fontSize: 20, color: "black", width: "85%" }}>
                   Thống kê cá nhân
                 </Text>

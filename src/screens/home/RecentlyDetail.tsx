@@ -19,12 +19,29 @@ export default function RecentlyDetail({ route, navigation }: any) {
   const { config, history, user, token } = useAuth();
 
   const [dataSachRecentlyDetail, setDataSachRecentlyDetail] = useState<any>([]);
-  const GetBookRecentlyDetail = () => {
-    setDataSachRecentlyDetail(history);
+  const [loading, setLoading] = useState(true);
+  const GetBookRecentlyDetail = async () => {
+    if (user) {
+      setLoading(true);
+      try {
+        const res = await axiosPrivate.get(
+          `user/get-user-read-history?userId=${user?.studentCode?._id}`
+        );
+        console.log("res", res.data.data);
+        setDataSachRecentlyDetail(res.data.data);
+      } catch (e) {
+        console.log("erre", e);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setDataSachRecentlyDetail(history);
+      setLoading(false);
+    }
   };
   useEffect(() => {
     GetBookRecentlyDetail();
-  }, []);
+  }, [user]);
   //   async function GetBookRecentlyDetail() {
   //     try {
   //       const res = await axiosPrivate.get(
@@ -43,9 +60,10 @@ export default function RecentlyDetail({ route, navigation }: any) {
   const renderItem = ({ item }: { item: any }) => (
     <BookRecently
       bookID={item.bookId}
-      percent={item.percent}
-      title={item.title}
-      image={item.image}
+      // percent={item.percent}
+      title={item.detail?.title}
+      image={item.detail?.image}
+      author={item.detail?.authorId?.name}
       onPress={() =>
         navigation.navigate("BookDetails", { bookId: item.bookId })
       }

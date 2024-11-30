@@ -46,6 +46,7 @@ export default function SuggestDetail({ route, navigation }: any) {
       image={item?.image}
       titleBottom={item?.price.toString()}
       bookTitle={item?.title}
+      type={item?.type}
       authorName={item?.authorId?.name}
       onPress={() => {
         navigation.navigate("BookDetails", { bookId: item._id });

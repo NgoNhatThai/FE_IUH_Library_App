@@ -101,6 +101,7 @@ export default function Discover({ navigation }: any) {
       titleBottom={item?.price.toString()}
       bookTitle={item?.title}
       authorName={item?.authorId?.name}
+      type={item?.type}
       onPress={() => {
         navigation.navigate("BookDetails", { bookId: item._id });
       }}

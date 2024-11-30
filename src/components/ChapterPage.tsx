@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   StyleSheet,
+  Image,
   ScrollView,
 } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -54,6 +55,7 @@ const ChapterPage = ({
   isNextPage,
   setIsNextPage,
   handleExitPage,
+  bookType,
 }: // selectedVoice,
 // setSelectedVoice,
 // speechRate,
@@ -66,7 +68,6 @@ any) => {
     { fontSize: 16, lineHeight: 21, padding: 13 },
     { fontSize: 18, lineHeight: 19, padding: 10 },
   ];
-
   // State cho cỡ chữ, màu chữ, màu nền, phông chữ, và hướng đọc
   const [isModalVisibleSetting, setModalVisibleSetting] = useState(false);
   const [isColorPickerVisible, setIsColorPickerVisible] = useState(false);
@@ -110,7 +111,6 @@ any) => {
       }
     });
   }, []);
-
   useEffect(() => {
     Tts.setDefaultRate(speechRate);
     if (isShowVoice && !isPaused) {
@@ -231,50 +231,65 @@ any) => {
       <View
         style={{
           width: width,
-          padding: sizes[currentSizeIndex].padding,
-          paddingTop: "18%",
-          backgroundColor: backgroundColor,
+          padding: bookType === "VOICE" ? sizes[currentSizeIndex].padding : 0,
+          paddingTop: bookType === "VOICE" ? "18%" : 0,
+          backgroundColor: bookType === "VOICE" ? backgroundColor : null,
         }}
       >
-        {paragraphs2.map((paragraph: string, index: number) => {
-          const sentences = paragraph.split(/(?<=[,\.!?:])\s+/g); // Tách câu với lookbehind giữ lại dấu câu
-          return (
-            <Text
-              key={index}
-              selectable={true}
-              style={{
-                textAlign:
-                  readingDirection === "ltr"
-                    ? "left"
-                    : readingDirection === "rtl"
-                    ? "right"
-                    : "auto",
-                fontSize: sizes[currentSizeIndex].fontSize,
-                lineHeight: sizes[currentSizeIndex].lineHeight,
-                // color:
-                //   currentChunk === index && isShowVoice ? "blue" : textColor, // Highlight đoạn hiện tại
-                // color: isHighlighted ? "blue" : textColor,
-                fontFamily: fontFamily,
-              }}
-            >
-              {sentences.map((sentence, sentenceIndex) => {
-                // Kiểm tra nếu câu hiện tại là câu đang được đọc để highlight
-                const isHighlighted = currentChunk === sentenceIndex;
+        {bookType === "VOICE" ? (
+          paragraphs2.map((paragraph: string, index: number) => {
+            const sentences = paragraph.split(/(?<=[,\.!?:])\s+/g); // Tách câu với lookbehind giữ lại dấu câu
+            return (
+              <Text
+                key={index}
+                selectable={true}
+                style={{
+                  textAlign:
+                    readingDirection === "ltr"
+                      ? "left"
+                      : readingDirection === "rtl"
+                      ? "right"
+                      : "auto",
+                  fontSize: sizes[currentSizeIndex].fontSize,
+                  lineHeight: sizes[currentSizeIndex].lineHeight,
+                  // color:
+                  //   currentChunk === index && isShowVoice ? "blue" : textColor, // Highlight đoạn hiện tại
+                  // color: isHighlighted ? "blue" : textColor,
+                  fontFamily: fontFamily,
+                }}
+              >
+                {sentences.map((sentence, sentenceIndex) => {
+                  // Kiểm tra nếu câu hiện tại là câu đang được đọc để highlight
+                  const isHighlighted = currentChunk === sentenceIndex;
 
-                return (
-                  <Text
-                    key={sentenceIndex}
-                    style={{
-                      color: isHighlighted && isShowVoice ? "blue" : textColor, // Highlight câu hiện tại
-                    }}
-                  >
-                    {sentence + " "}
-                  </Text>
-                );
-              })}
-            </Text>
-          );
-        })}
+                  return (
+                    <Text
+                      key={sentenceIndex}
+                      style={{
+                        color:
+                          isHighlighted && isShowVoice ? "blue" : textColor, // Highlight câu hiện tại
+                      }}
+                    >
+                      {sentence + " "}
+                    </Text>
+                  );
+                })}
+              </Text>
+            );
+          })
+        ) : (
+          <View>
+            <Image
+              source={{ uri: chapter?.images[textIndex] }}
+              style={{
+                width: width * 1.2,
+                height,
+                resizeMode: "stretch",
+                marginLeft: -width * 0.1,
+              }}
+            />
+          </View>
+        )}
 
         {/* Modal Setting */}
         <Modal

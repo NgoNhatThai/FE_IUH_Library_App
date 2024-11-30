@@ -10,6 +10,7 @@ export { default as Notify } from "./notify/Notify";
 export { default as Discover } from "./home/materialTop/Discover";
 export { default as Category } from "./home/materialTop/Category";
 export { default as TopView } from "./home/materialTop/TopView";
+export { default as NewUpdate } from "./home/materialTop/NewUpdate";
 export { default as BookDetails } from "./bookdetail/BookDetails";
 export { default as BookReader } from "./bookdetail/BookReader";
 export { default as CatergoryDetail } from "./home/CatergoryDetail";

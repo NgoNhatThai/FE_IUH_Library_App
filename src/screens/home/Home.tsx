@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import LinearGradient from "react-native-linear-gradient"; // Import LinearGradient
 const Tab = createMaterialTopTabNavigator();
-import { Category, Discover, TopView } from "../index";
+import { Category, Discover, TopView, NewUpdate } from "../index";
 
 export default function Home({ navigation }: any) {
   return (
@@ -17,7 +17,7 @@ export default function Home({ navigation }: any) {
           tabBarActiveTintColor: "#E48641",
           tabBarInactiveTintColor: "#000000",
           tabBarLabelStyle: { fontSize: 12, fontWeight: "bold" },
-          tabBarItemStyle: { width: 120 },
+          tabBarItemStyle: { width: 100 },
           tabBarIndicatorStyle: { backgroundColor: "#E48641" },
           tabBarStyle: {
             elevation: 0,
@@ -36,6 +36,7 @@ export default function Home({ navigation }: any) {
         <Tab.Screen name="Khám phá" component={Discover} />
         <Tab.Screen name="Đọc nhiều" component={TopView} />
         <Tab.Screen name="Danh mục" component={Category} />
+        <Tab.Screen name="Sách mới" component={NewUpdate} />
       </Tab.Navigator>
     </LinearGradient>
   );

@@ -13,6 +13,8 @@ import { ToastError, ToastSuscess } from "../../utils/function";
 import axiosPrivate from "../../api/axiosPrivate";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 export default function SignIn({ navigation }: any) {
   const [mssv, setMssv] = useState("");
   const [password, setPassword] = useState("");
@@ -58,14 +60,28 @@ export default function SignIn({ navigation }: any) {
         style={styles.backgroundImage}
       >
         <LinearGradient
-          colors={["rgba(0, 0, 0, 0.2)", "rgba(0, 0, 0, 1)"]}
+          colors={["rgba(0, 0, 0, 0.0)", "rgba(0, 0, 0, 0.9)"]}
           style={{ width: "100%", height: "100%" }}
         ></LinearGradient>
       </ImageBackground>
       <LinearGradient
-        colors={["rgba(0, 0, 0, 0.4)", "rgba(0, 0, 0, 1.7)"]}
+        colors={["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 1.1)"]}
         style={styles.overlay}
       >
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 20,
+            left: 20,
+            padding: 10,
+            borderRadius: 50,
+          }}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Ionicons name="arrow-back" size={30} color="white" />
+        </TouchableOpacity>
         <Text style={{ color: "white", fontSize: 26, fontWeight: 400 }}>
           Chào mừng bạn đến với
         </Text>
@@ -83,7 +99,7 @@ export default function SignIn({ navigation }: any) {
         >
           <Text
             style={{
-              color: "#747474",
+              color: "#B3B3B3",
               fontSize: 20,
               textAlign: "center",
             }}
@@ -127,7 +143,7 @@ export default function SignIn({ navigation }: any) {
               width: "95%",
             }}
           >
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 navigation.navigate("SignUp");
               }}
@@ -135,12 +151,12 @@ export default function SignIn({ navigation }: any) {
               <Text style={{ color: "#1EAB85", fontSize: 18 }}>
                 Đăng kí ngay
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
+            </TouchableOpacity> */}
+            {/* <TouchableOpacity>
               <Text style={{ color: "#1EAB85", fontSize: 18 }}>
                 Quên mật khẩu
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </LinearGradient>

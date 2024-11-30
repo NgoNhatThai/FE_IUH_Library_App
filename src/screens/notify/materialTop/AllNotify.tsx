@@ -52,7 +52,7 @@ export default function AllNotify({ navigation }: any) {
       <TouchableOpacity
         style={{
           width: width * 0.96,
-          height: 150,
+          height: 170,
           backgroundColor: item?.status == "READ" ? "#fff" : "#E0F7F4",
           alignItems: "center",
           justifyContent: "center",
@@ -85,7 +85,9 @@ export default function AllNotify({ navigation }: any) {
         >
           <Image
             source={{
-              uri: item?.bookId?.image,
+              uri: item?.bookId?.image
+                ? item?.bookId?.image
+                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmH5sA70dBQJKIuuv1teh1OG5eQZLzS4QZDg&s",
             }}
             style={{
               width: 80,
@@ -104,7 +106,7 @@ export default function AllNotify({ navigation }: any) {
           }}
         >
           <Text style={{ fontSize: 19, fontWeight: "bold", color: "black" }}>
-            {item?.bookId?.title}
+            {item?.bookId?.title ? item?.bookId?.title : "Hệ thống"}
           </Text>
           <Text style={{ fontSize: 18, fontWeight: "bold" }}>
             {item?.message}

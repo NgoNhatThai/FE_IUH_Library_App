@@ -77,7 +77,9 @@ export default function Unread({ navigation }: any) {
         >
           <Image
             source={{
-              uri: item?.bookId?.image,
+              uri: item?.bookId?.image
+                ? item?.bookId?.image
+                : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmH5sA70dBQJKIuuv1teh1OG5eQZLzS4QZDg&s",
             }}
             style={{
               width: 80,
@@ -96,7 +98,7 @@ export default function Unread({ navigation }: any) {
           }}
         >
           <Text style={{ fontSize: 19, fontWeight: "bold", color: "black" }}>
-            {item?.bookId?.title}
+            {item?.bookId?.title ? item?.bookId?.title : "Hệ thống"}
           </Text>
           <Text style={{ fontSize: 18, fontWeight: "bold" }}>
             {item?.message}

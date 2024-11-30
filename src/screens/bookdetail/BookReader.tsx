@@ -379,6 +379,7 @@ const BookReader = ({ route, navigation }: any) => {
             // setSelectedVoice={setSelectedVoice}
             // speechRate={speechRate}
             // setSpeechRate={setSpeechRate}
+            bookType={book.type}
           />
         );
       }

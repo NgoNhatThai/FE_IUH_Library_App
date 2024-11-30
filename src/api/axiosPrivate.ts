@@ -6,7 +6,7 @@ import queryString from "query-string";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // const BASE_URL = REACT_APP_API_URL || "http://localhost:5500/api";
 const BASE_URL = REACT_APP_API_URL;
-console.log("o5aaaâsa ", BASE_URL);
+console.log("o5ssáâ", BASE_URL);
 const axiosPrivate = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },

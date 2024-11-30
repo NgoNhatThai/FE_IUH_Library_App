@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { LineChart, BarChart } from "react-native-chart-kit";
+import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
 import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/Ionicons";
 import axiosPrivate from "../../../api/axiosPrivate";
@@ -52,10 +52,83 @@ export default function PersonalStatistics({ navigation }: any) {
     }
     setLoading(false);
   };
+  const [dataThuChi, setDataThuChi] = useState<any>({
+    pieChartData: [],
+    totalIncome: 0,
+    totalExpense: 0,
+  });
+
+  const getDataThuChi = async () => {
+    setLoading(true);
+    if (startDate && endDate) {
+      try {
+        const formattedStartDate = new Date(
+          startDate.getTime() - startDate.getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .split("T")[0];
+        const formattedEndDate = new Date(
+          endDate.getTime() - endDate.getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .split("T")[0];
+
+        const response = await axiosPrivate(
+          `user/get-user-amount?userId=${user?.studentCode?._id}&startDate=${formattedStartDate}&endDate=${formattedEndDate}&userId=${user?.studentCode?._id}`
+        );
+        // Xử lý dữ liệu thu/chi cho biểu đồ tròn
+        const history = response.data.data.history;
+        const processedData = processDataForPieChart(history);
+
+        setDataThuChi({
+          pieChartData: processedData,
+          totalIncome: processedData[0]?.population || 0,
+          totalExpense: processedData[1]?.population || 0,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    setLoading(false);
+  };
+
+  // Hàm xử lý dữ liệu cho Pie Chart
+  const processDataForPieChart = (history: any) => {
+    const data = {
+      income: 0,
+      expense: 0,
+    };
+
+    history.forEach((transaction: any) => {
+      if (transaction.amount > 0) {
+        data.income += transaction.amount;
+      } else {
+        data.expense += Math.abs(transaction.amount); // Giá trị tuyệt đối cho chi tiêu
+      }
+    });
+
+    return [
+      {
+        name: "Nạp vào",
+        population: data.income,
+        color: "#4CAF50",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15,
+      },
+      {
+        name: "Chi ra",
+        population: data.expense,
+        color: "#F44336",
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15,
+      },
+    ];
+  };
 
   useEffect(() => {
     if (startDate && endDate) {
       getDataRead();
+      getDataThuChi();
     }
   }, [startDate, endDate]);
 
@@ -69,7 +142,6 @@ export default function PersonalStatistics({ navigation }: any) {
 
   // Kiểm tra nếu có dữ liệu đọc
   const noData = !filteredData.length;
-
   // Tính thời gian đọc trung bình
   const averageReadTime = dataRead.averageReadTime || 0;
 
@@ -165,7 +237,7 @@ export default function PersonalStatistics({ navigation }: any) {
           ]}
           onPress={() => {
             setIsChoose("thuchi");
-            getDataRead();
+            getDataThuChi();
           }}
         >
           <Text
@@ -224,29 +296,77 @@ export default function PersonalStatistics({ navigation }: any) {
         )}
       </View>
 
-      {noData ? (
+      {isChoose === "read" ? (
+        noData ? (
+          <Text style={styles.noDataText}>
+            Không có dữ liệu trong khoảng thời gian này.
+          </Text>
+        ) : (
+          <>
+            <BarChart
+              data={chartData}
+              width={screenWidth * 0.95}
+              height={300}
+              yAxisLabel=""
+              yAxisSuffix=" phút"
+              chartConfig={chartConfig}
+              fromZero
+              style={{ marginVertical: 8, borderRadius: 16 }}
+            />
+            <Text style={styles.averageText}>
+              Thời gian đọc trung bình: {averageReadTime.toFixed(1)} phút trong
+              vòng {totalDays} ngày
+            </Text>
+            <Text style={styles.averageText}>
+              Tỉ lệ đọc sách hằng ngày: {readingRate}% (số ngày đọc:{" "}
+              {readingDays}/{totalDays})
+            </Text>
+          </>
+        )
+      ) : dataThuChi.pieChartData.length == 0 ? (
         <Text style={styles.noDataText}>
           Không có dữ liệu trong khoảng thời gian này.
         </Text>
       ) : (
         <>
-          <BarChart
-            data={chartData}
-            width={screenWidth * 0.95}
-            height={300}
-            yAxisLabel=""
-            yAxisSuffix=" phút"
-            chartConfig={chartConfig}
-            fromZero
-            style={{ marginVertical: 8, borderRadius: 16 }}
+          <PieChart
+            data={dataThuChi.pieChartData}
+            width={screenWidth}
+            height={220}
+            chartConfig={{
+              backgroundColor: "#f5f5f5",
+              backgroundGradientFrom: "#ffffff",
+              backgroundGradientTo: "#ffffff",
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            }}
+            accessor={"population"}
+            backgroundColor={"transparent"}
+            paddingLeft={"15"}
+            center={[10, 0]}
+            absolute // Hiển thị số liệu bên trong biểu đồ
           />
           <Text style={styles.averageText}>
-            Thời gian đọc trung bình: {averageReadTime.toFixed(1)} phút trong
-            vòng {totalDays} ngày
+            Tổng tiền nạp vào trong vòng {totalDays} ngày:{" "}
+            {dataThuChi.totalIncome.toLocaleString()} VND
           </Text>
           <Text style={styles.averageText}>
-            Tỉ lệ đọc sách hằng ngày: {readingRate}% (số ngày đọc: {readingDays}
-            /{totalDays})
+            Tổng chi ra trong vòng {totalDays} ngày: :{" "}
+            {dataThuChi.totalExpense.toLocaleString()} VND
+          </Text>
+          {/* // tính toán số tiền còn lại, nếu số tiền còn lại > 0 thì hiển thị màu xanh, ngược lại hiển thị màu đỏ */}
+          <Text
+            style={[
+              styles.averageText,
+              {
+                color: "#4CAF50",
+              },
+            ]}
+          >
+            Số tiền còn lại:{" "}
+            {(
+              dataThuChi.totalIncome - dataThuChi.totalExpense
+            ).toLocaleString()}{" "}
+            VND
           </Text>
         </>
       )}

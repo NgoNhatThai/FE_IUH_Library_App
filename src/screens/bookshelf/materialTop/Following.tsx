@@ -25,7 +25,6 @@ export default function Following({ navigation }: any) {
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [modalVisibleDeleteALl, setModalVisibleDeleteALl] = useState(false);
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -43,8 +42,13 @@ export default function Following({ navigation }: any) {
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
-    }, [])
+      if (user) {
+        fetchData();
+      } else {
+        console.log("log");
+        setData([]);
+      }
+    }, [user])
   );
   const onRefresh = async () => {
     setRefreshing(true);

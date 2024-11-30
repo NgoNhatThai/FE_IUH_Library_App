@@ -1,0 +1,25 @@
+{
+  "bookId": "66c80ac984f782bb09084d0b",
+  "detail": {
+    "__v": 0,
+    "_id": "66c80ac984f782bb09084d0b",
+    "active": true,
+    "authorId": [],
+    "categoryId": [],
+    "content": "66c80ac984f782bb09084d09",
+    "createDate": "2024-08-23T04:06:33.581Z",
+    "createdAt": "2024-08-23T04:06:33.582Z",
+    "desc": "Một tiểu thuyết ngắn được viết và minh họa bởi nhà văn và phi công quân sự người Pháp Antoine de Saint-Exupéry . Nó được xuất bản lần đầu tiên bằng tiếng Anh và tiếng Pháp tại Hoa Kỳ bởi Reynal & Hitchcock vào tháng 4 năm 1943 và được xuất bản sau khi được giải phóng ở Pháp ; Các tác phẩm của Saint-Exupéry đã bị Chế độ Vichy cấm . Câu chuyện kể về một hoàng tử trẻ đến thăm nhiều hành tinh khác nhau, bao gồm cả Trái đất và đề cập đến các chủ đề về sự cô đơn, tình bạn, tình yêu và sự mất mát.",
+    "image": "https://res.cloudinary.com/iuhcloundlibrary/image/upload/v1724385993/Khoa%20h%E1%BB%8Dc%20gi%C3%A1o%20d%E1%BB%A5c.png",
+    "limit": "12+",
+    "majorId": [],
+    "price": 0,
+    "review": [],
+    "status": "ISWRITE",
+    "title": "Khoa học giáo dục",
+    "type": "NORMAL",
+    "updatedAt": "2024-08-23T04:06:33.674Z"
+  },
+  "lastReadAt": "2024-11-30T10:02:08.368Z",
+  "lastReadChapterId": "66c80bff84f782bb09084d24"
+}
