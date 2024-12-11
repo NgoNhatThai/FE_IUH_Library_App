@@ -45,8 +45,15 @@ const Book: React.FC<BookProps> = ({
             <Text style={styles.categoryText}>{category}</Text>
           </View>
         )}
-        {type && type != "NORMAL" && (
-          <View style={styles.typeBadge}>
+        {type && (
+          <View
+            style={[
+              styles.typeBadge,
+              {
+                backgroundColor: type == "IMAGE" ? "#E48641" : "#2D9CDB",
+              },
+            ]}
+          >
             <Text style={styles.priceText}>
               {type == "IMAGE" ? "PDF" : "EPUB"}
             </Text>

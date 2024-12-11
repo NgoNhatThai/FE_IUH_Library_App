@@ -94,8 +94,15 @@ const BookHorizontal: React.FC<BookProps> = ({
     >
       <View style={styles.imageContainer}>
         <Image source={{ uri: image }} style={styles.image} />
-        {type && type != "NORMAL" && (
-          <View style={styles.typeBadge}>
+        {type && (
+          <View
+            style={[
+              styles.typeBadge,
+              {
+                backgroundColor: type == "IMAGE" ? "#E48641" : "#2D9CDB",
+              },
+            ]}
+          >
             <Text style={styles.priceText}>
               {type == "IMAGE" ? "PDF" : "EPUB"}
             </Text>
@@ -204,7 +211,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     left: 8,
-    backgroundColor: "#FF9F43",
+
     paddingVertical: 2,
     paddingHorizontal: 6,
     borderRadius: 4,
